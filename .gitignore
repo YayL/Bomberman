@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+!CMakeLists.txt
+!Makefile
+!COPYING
+!README.md
+
+!src/
+!src/*
+
+!includes/
+!includes/*
+
+!lib/
+!lib/*
