@@ -8,9 +8,11 @@
 
 !src/
 !src/*
+!src/**
 
 !includes/
 !includes/*
+!includes/**
 
 !lib/
 !lib/*
