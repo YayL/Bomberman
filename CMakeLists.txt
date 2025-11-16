@@ -23,6 +23,25 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 # Compiler flags
 add_compile_options(-Wall -nostdlib -O0 -mabi=ilp32 -march=rv32imzicsr -fno-builtin)
 
+function(embed_resource resource_file_name variable_name)
+    file(READ "assets/${resource_file_name}" hex_content HEX)
+
+    string(REPEAT "[0-9a-f]" 32 column_pattern)
+    string(REGEX REPLACE "(${column_pattern})" "\\1\n" content "${hex_content}")
+
+    string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1, " content "${content}")
+
+    string(REGEX REPLACE ", $" "" content "${content}")
+
+    set(array_definition "static const unsigned char ${variable_name}[] =\n{\n${content}\n};")
+
+    set(source "// Auto generated file.\n${array_definition}\n")
+
+    file(WRITE "includes/assets/${resource_file_name}.h" "${source}")
+endfunction()
+
+embed_resource("test.txt" "TEST")
+
 # Find sources
 file(GLOB_RECURSE SOURCES src/*.c src/*.S lib/*.c lib/*.S)
 
@@ -37,8 +56,10 @@ target_link_options(bomberman PRIVATE -T${CMAKE_SOURCE_DIR}/lib/dtekv-script.lds
 target_link_libraries(bomberman PRIVATE ${CMAKE_SOURCE_DIR}/lib/softfloat.a)
 target_include_directories(bomberman PRIVATE 
     ${CMAKE_SOURCE_DIR}/includes
+    ${CMAKE_SOURCE_DIR}/assets
     ${CMAKE_SOURCE_DIR}/lib
 )
+
 
 # Generate .bin and disassembly
 add_custom_command(TARGET bomberman POST_BUILD

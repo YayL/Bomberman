@@ -14,5 +14,12 @@
 !includes/*
 !includes/**
 
+# Ignore generated directory includes/assets
+includes/assets/*
+
 !lib/
 !lib/*
+
+!assets/
+!assets/*
+!assets/**
