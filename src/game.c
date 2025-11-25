@@ -11,6 +11,8 @@ void game_set_running_state(char state) {
 
 void game_init() {
 	fill_background();
+	draw_border();
+	draw_inner_squares();
 }
 
 void game_run() {
