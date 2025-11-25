@@ -1,9 +1,6 @@
 #include "game.h"
 #include "dtekv-lib.h"
-
-#include "assets/test.txt.h"
-#include <stdint.h>
-#include <stddef.h>
+#include "utils/timer.h"
 
 #define FRAMEBUFFER_ADDRESS ((volatile char*)0x08000000)
 
@@ -20,11 +17,15 @@ void fill_background(int color) {
 
 void game_init() {
 	fill_background(80);
-
+	
 }
 
 void game_run() {
 	while (is_running) {
+		uint32_t delta = timer_get_delta_us();
 
+		puts("Delta: ");
+		print_dec(delta);
+		puts("us\n");
 	}
 }

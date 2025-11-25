@@ -8,4 +8,4 @@ void timer_init();
 
 void timer_ack();
 
-uint32_t timer_get_delta();
+uint32_t timer_get_delta_us();
