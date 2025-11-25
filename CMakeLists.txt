@@ -21,7 +21,7 @@ set(CMAKE_C_LINK_DEPENDS_NO_SHARED TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 # Compiler flags
-add_compile_options(-Wall -nostdlib -O0 -mabi=ilp32 -march=rv32imzicsr -fno-builtin)
+add_compile_options(-Wall -nostdlib -O3 -mabi=ilp32 -march=rv32imzicsr -fno-builtin)
 
 function(embed_resource resource_file_name variable_name)
     file(READ "assets/${resource_file_name}" hex_content HEX)

@@ -28,7 +28,7 @@ volatile struct timer {
 
 uint32_t last_snapshot = 0;
 
-#define TIMER_TICK_RATE 30000000 // 30 MHz
+#define TIMER_FREQ 3e7 // 30 MHz
 #define TIMER_PERIOD UINT32_MAX  // Maximum timer period allowed and handles timer_get_delta wrap around automatically
 
 static inline void timer_set_period(uint32_t period) {
@@ -36,7 +36,7 @@ static inline void timer_set_period(uint32_t period) {
 	timer->period.high = period >> 16;
 }
 
-static inline uint32_t timer_get_snap() {
+volatile static inline uint32_t timer_get_snap() {
 	timer->snap.low = 0; // request snapshot
 	return (timer->snap.low & 0xffff) | (timer->snap.high << 16);
 }
@@ -54,6 +54,7 @@ void timer_enable_interrupt() {
 
 void timer_init() {
 	timer_set_period(UINT32_MAX);
+	last_snapshot = UINT32_MAX;
 	timer->control.CONT = 1;
 	timer->control.START = 1;
 	timer->status.TO = 1;
@@ -63,10 +64,10 @@ void timer_ack() {
 	timer->status.TO = 1;
 }
 
-uint32_t timer_get_delta() {
+uint32_t timer_get_delta_us() {
 	uint32_t current = timer_get_snap();
 	uint32_t elapsed = last_snapshot - current; // Fix wrap around if TIMER_PERIOD is modified from UINT32_MAX
 	last_snapshot = current;
 
-	return elapsed;
+	return elapsed / (TIMER_FREQ / 1e6);
 }
