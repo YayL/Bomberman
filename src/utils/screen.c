@@ -1,25 +1,26 @@
 #include "utils/screen.h"
-#include <sys/_intsup.h>
+#include "dtekv-lib.h"
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
-#define FRAMEBUFFER_ADDRESS ((volatile char*)0x08000000)
-#define BACKGROUND_COLOR RGB(0, 7, 0)
+#define BACKGROUND_COLOR1 RGB(4, 7, 0)
+#define BACKGROUND_COLOR2 RGB(4, 7, 2)
+
 #define BORDER_COLOR RGB(7, 7, 3)
-#define RGB(r, g, b) (((r & 0b111) << 5) | ((g & 0b111) << 2) | (b & 0b11))
-#define PIXEL_TO_WIDTH(x) (x / SCREEN_WIDTH)
-#define PIXEL_TO_HEIGHT(y) (y / SCREEN_HEIGHT)
-#define SQUARE_SIZE 16
-
 
 void fill_background() {
-    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++)
-        FRAMEBUFFER_ADDRESS[i] = BACKGROUND_COLOR; 
+    char type = 0; 
+
+    for (int pixel = 0; pixel < SCREEN_WIDTH * SCREEN_HEIGHT; pixel++) {
+        if (pixel % BLOCK_SIZE == 0 && pixel % (SCREEN_WIDTH * BLOCK_SIZE) != 0) {
+            type = !type;
+        }
+
+        FRAMEBUFFER_ADDRESS[pixel] = (type ? BACKGROUND_COLOR1 : BACKGROUND_COLOR2);
+    }
 }
 
 void make_square(int x, int y, char color) {
-    for (int j = 0; j < SQUARE_SIZE; j++) {
-        for (int i = 0; i < SQUARE_SIZE; i++) {
+    for (int j = 0; j < BLOCK_SIZE; j++) {
+        for (int i = 0; i < BLOCK_SIZE; i++) {
             int pixel_x = x + i;
             int pixel_y = y + j;
             if (pixel_x >= 0 && pixel_x < SCREEN_WIDTH && pixel_y >= 0 && pixel_y < SCREEN_HEIGHT) {

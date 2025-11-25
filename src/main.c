@@ -3,8 +3,8 @@
 #include "game.h"
 
 int main() {
-	timer_init();
-	timer_enable_interrupt();
+	// timer_init();
+	// timer_enable_interrupt();
 
 	game_init();
 	game_run();
