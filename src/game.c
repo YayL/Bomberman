@@ -5,50 +5,51 @@
 #include "player.h"
 #include "utils/button.h"
 
-#define LIGHT_GREY RGB(7, 7, 7)
-#define GREY RGB(4, 4, 2)
-#define BLACK RGB(0, 0, 0)
-#define WHITE RGB(7, 7, 3)
-#define YELLOW RGB(7, 5, 0)
-#define BACKGROUND_GREEN RGB(0, 4, 0)
+#include "menus/start.h"
+#include "menus/classic.h"
 
-typedef enum{
-	GAME_STATE_MENU,
-	GAME_STATE_PLAYING
-} game_state;
+enum game_state {
+	GAME_STATE_NONE,
+	GAME_STATE_START,
+	GAME_STATE_CLASSIC
+};
 
-static game_state currentState = GAME_STATE_MENU;
+static enum game_state current_state = GAME_STATE_NONE;
+#define TARGET_FPS 60
+#define TARGET_TIME_UPDATE (1e6 / TARGET_FPS)
 
 static char is_running = 1;
+static uint32_t time_since_last_update;
 
 void game_set_running_state(char state) {
 	is_running = state;
 }
 
-void game_init() {
-	switch (currentState) {
-		case GAME_STATE_MENU:
-			fill_background(BLACK);
-			draw_text(SCREEN_WIDTH / 2 - 36, 10, "BOMBERMAN", YELLOW);
-			draw_text(SCREEN_WIDTH / 2 - 84, SCREEN_HEIGHT / 2 - 20, "PRESS BUTTON TO START", WHITE);
-			draw_text(10, SCREEN_HEIGHT - 60, "UP:    SWITCH 0", WHITE);
-			draw_text(10, SCREEN_HEIGHT - 50, "DOWN:  SWITCH 1", WHITE);
-			draw_text(10, SCREEN_HEIGHT - 40, "RIGHT: SWITCH 8", WHITE);
-			draw_text(10, SCREEN_HEIGHT - 30, "LEFT:  SWITCH 9", WHITE);
-			draw_text(10, SCREEN_HEIGHT - 20, "BOMB:  BUTTON", WHITE);
-			break;
-		case GAME_STATE_PLAYING:
-			fill_background(BACKGROUND_GREEN);
-			mark_world();
-			draw_text(SCREEN_WIDTH / 2 - 36, 10, "BOMBERMAN", LIGHT_GREY);
-			break;
+void game_set_game_state(enum game_state state) {
+	switch (state) {
+		case GAME_STATE_START:
+			start_menu_init(); break;
+		case GAME_STATE_CLASSIC:
+			classic_menu_init(); break;
+		default:
+			puts("Tried setting game state to invalid active game state");
+			exit();
 	}
+
+	current_state = state;
+}
+
+void game_init() {
+	screen_init();
+	game_set_game_state(GAME_STATE_CLASSIC);
 }
 
 void game_run() {
 	char temp = 1;
 	char button_down = 0;
 	char previous_button_state = 0;
+
+	time_since_last_update = 0;
 
 	while (is_running) {
 		if(button_get_state() && !previous_button_state){
@@ -58,11 +59,21 @@ void game_run() {
 		}
 		previous_button_state = button_get_state();
 
-		switch (currentState) {
 			case GAME_STATE_MENU:
 				if (button_down) {
 					currentState = GAME_STATE_PLAYING;
 				}
+		uint32_t delta = timer_get_delta_us();
+		time_since_last_update += delta;
+
+		if (time_since_last_update < TARGET_TIME_UPDATE) {
+			continue;
+		}
+
+		switch (current_state) {
+			case GAME_STATE_START:
+				start_menu_update();
+				start_menu_draw();
 				break;
 			case GAME_STATE_PLAYING:
 				if (temp) {
@@ -75,12 +86,16 @@ void game_run() {
 				if (button_down) {
 					mark_bomb_at_player_position();
 				}
+			case GAME_STATE_CLASSIC:
+				classic_menu_update(time_since_last_update);
+				classic_menu_draw(time_since_last_update);
 				break;
+			default:
+				puts("Invalid game state in game loop");
+				exit();
 		}
-		// uint32_t delta = timer_get_delta_us();
-		//
-		// puts("Delta: ");
-		// print_dec(delta);
-		// puts("us\n");
+
+		screen_blit();
+		time_since_last_update = 0;
 	}
 }

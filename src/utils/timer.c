@@ -48,8 +48,6 @@ void timer_enable_interrupt() {
 		"csrsi mstatus, 3;"
 		"csrsi mie, 16;"
 	);
-
-	return;
 }
 
 void timer_init() {
@@ -64,10 +62,23 @@ void timer_ack() {
 	timer->status.TO = 1;
 }
 
+uint32_t timer_get_delta_us_no_reset() {
+	uint32_t current = timer_get_snap();
+	uint32_t elapsed = last_snapshot - current; // Fix wrap around if TIMER_PERIOD is modified from UINT32_MAX
+
+	return elapsed / (TIMER_FREQ / 1e6);
+
+}
+
 uint32_t timer_get_delta_us() {
 	uint32_t current = timer_get_snap();
 	uint32_t elapsed = last_snapshot - current; // Fix wrap around if TIMER_PERIOD is modified from UINT32_MAX
 	last_snapshot = current;
 
 	return elapsed / (TIMER_FREQ / 1e6);
+}
+
+void timer_wait(uint32_t wait_time) {
+	timer_get_delta_us();
+	while (timer_get_delta_us_no_reset() < wait_time);
 }

@@ -19,5 +19,5 @@ uint32_t switches_get_switch_state(uint32_t switch_nr) {
 }
 
 uint32_t switches_get_all_switch_states() {
-	return switches->data & 0x1111111111;
+	return switches->data & ((1 << 10) - 1);
 }

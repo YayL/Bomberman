@@ -6,7 +6,9 @@
 #define SCREEN_HEIGHT 240
 #define BLOCK_SIZE 16
 
-#define FRAMEBUFFER_ADDRESS ((volatile char*)0x08000000)
+#define VGA_DMA_CONTROLLER_ADDRESS ((volatile uint32_t *) 0x04000100)
+#define FRAMEBUFFER_1_ADDRESS ((volatile char*)0x08000000)
+#define FRAMEBUFFER_2_ADDRESS ((volatile char*)0x08000000 + SCREEN_WIDTH * SCREEN_HEIGHT)
 
 // World Position is the coordinate grid
 #define WORLD_X_TO_SCREEN(X) (X * BLOCK_SIZE)
@@ -38,7 +40,21 @@ extern int world_grid[GRID_WIDTH][GRID_HEIGHT];
 void fill_background(char color);
 void generate_bricks(float spawn_chance);
 void draw_world();
-void draw_char(int x, int y, char c, char color);
-void draw_text(int x, int y, const char* str, char color);
 void mark_bomb(int x, int y);
 void mark_world();
+#define BLACK RGB(0, 0, 0)
+#define LIGHT_GREY RGB(7, 7, 7)
+#define GREY RGB(4, 4, 2)
+#define WHITE RGB(7, 7, 3)
+#define YELLOW RGB(7, 5, 0)
+#define BACKGROUND_GREEN RGB(0, 4, 0)
+
+void screen_init();
+void screen_blit();
+volatile char * screen_get_framebuffer_addr();
+
+void fill_background(uint8_t color);
+void draw_rectangle(uint32_t x_start, uint32_t y_start, uint32_t width, uint32_t height, uint8_t color);
+void draw_texture(uint32_t x_start, uint32_t y_start, const uint8_t * tex);
+void draw_char(uint32_t x, uint32_t y, char c, uint8_t color);
+void draw_word(uint32_t x, uint32_t y, const char * str, uint8_t color);

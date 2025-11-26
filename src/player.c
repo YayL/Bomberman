@@ -1,6 +1,7 @@
 #include "player.h"
+#include "common.h"
+#include "utils/mem.h"
 #include "utils/screen.h"
-#include "dtekv-lib.h"
 #include "utils/switches.h"
 
 struct player player = {
@@ -9,49 +10,44 @@ struct player player = {
 	.y = WORLD_Y_TO_SCREEN(3)
 };
 
-void player_move_up() {
-	player.y -= player.speed;
+#define CLAMP(VALUE, MIN, MAX) if (VALUE < MIN) { VALUE = MIN; } else if (MAX < VALUE) { VALUE = MAX; }
+inline void player_move(int32_t dx, int32_t dy) {
+	int32_t next_x = player.x + dx;
+	int32_t next_y = player.y + dy;
+
+	CLAMP(next_x, 0, SCREEN_WIDTH - PLAYER_WIDTH);
+	CLAMP(next_y, 0, SCREEN_HEIGHT - PLAYER_HEIGHT);
+
+	player.x = next_x;
+	player.y = next_y;
 }
 
-void player_move_down() {
-	player.y += player.speed;
-}
-
-void player_move_left() {
-	player.x -= player.speed;
-}
-
-void player_move_right() {
-	player.x += player.speed;
-}
-
+#define CHECK_NTH_SWITCH(SWITCHES, N) ((SWITCHES >> N) & 0x1)
 void player_update() {
-	// uint32_t switch_states = switches_get_all_switch_states();
-	// for (uint32_t i = 0; i <= 10; ++i) {
-	// 	char switch_state = (switch_states >> i) & 0b1;
-	// 	if (switch_state) {
-	// 		puts("Switch ");
-	// 		print_dec(i);
-	// 		putc('\n');
-	// 	}
-	//
-	// }
+	int32_t dx = 0, dy = 0;
+	const uint32_t switches = switches_get_all_switch_states();
 
-	if (switches_get_switch_state(0)){
-		player_move_up();
+	// Right
+	if (CHECK_NTH_SWITCH(switches, 0)) {
+		dx += 1;
 	}
 
-	if (switches_get_switch_state(1)){
-		player_move_down();
+	// Up
+	if (CHECK_NTH_SWITCH(switches, 1)) {
+		dy -= 1;
 	}
 
-	if (switches_get_switch_state(8)){
-		player_move_right();
+	// Down
+	if (CHECK_NTH_SWITCH(switches, 8)) {
+		dy += 1;
 	}
 
-	if (switches_get_switch_state(9)){
-		player_move_left();
+	// Left
+	if (CHECK_NTH_SWITCH(switches, 9)) {
+		dx -= 1;
 	}
+
+	player_move(dx, dy);
 }
 
 void mark_bomb_at_player_position(){
@@ -62,15 +58,5 @@ void mark_bomb_at_player_position(){
 }
 
 void player_draw() {
-	// player.x = WORLD_X_TO_SCREEN(6), player.y = WORLD_Y_TO_SCREEN(7);
-
-	uint32_t pixel = SCREEN_TO_PIXEL(player.x, player.y) + ((BLOCK_SIZE - PLAYER_WIDTH) / 2) + ((BLOCK_SIZE - PLAYER_HEIGHT) * SCREEN_WIDTH / 2);
-
-	for (uint32_t i = 0; i < PLAYER_HEIGHT; ++i) {
-		for (uint32_t j = 0; j < PLAYER_WIDTH; ++j) {
-			FRAMEBUFFER_ADDRESS[pixel++] = RGB(7, 0, 0);
-		}
-
-		pixel += SCREEN_WIDTH - PLAYER_WIDTH;
-	}
+	draw_rectangle(player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT, RGB(7, 0, 0));
 }

@@ -1,26 +1,11 @@
 #include "utils/screen.h"
 #include "dtekv-lib.h"
 #include "wall_texture.h"
-#include "brick_texture.h"
 #include "font8x8_basic.h"
-#include "bomb_texture.h"
+
+#define BACKGROUND_COLOR RGB(0, 4, 0)
 
 #define GREY_COLOR RGB(4, 4, 2)
-
-static uint32_t rng_state = 0x12345678;
-
-uint32_t fast_rand() {
-    rng_state ^= rng_state << 13;
-    rng_state ^= rng_state >> 17;
-    rng_state ^= rng_state << 5;
-    return rng_state;
-}
-
-int world_grid[GRID_WIDTH][GRID_HEIGHT];
-
-int rand_range(int min, int max) {
-    return (fast_rand() % (max - min + 1)) + min;
-}
 
 void fill_background(char color) {
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
@@ -34,40 +19,20 @@ void draw_pixel(int x, int y, char color) {
     }
 }
 
-void draw_square(int x, int y, char color) {
-    for (int j = 0; j < BLOCK_SIZE; j++) {
-        for (int i = 0; i < BLOCK_SIZE; i++) {
-            int pixel_x = x + i;
-            int pixel_y = y + j;
-            draw_pixel(pixel_x, pixel_y, color);
-        }
-    }
-}
+inline void draw_char(uint32_t x, uint32_t y, char c, uint8_t color) {
+    uint8_t * bitmap = (uint8_t *) font8x8_basic[(uint8_t)c];
 
-void draw_texture(int x, int y, const unsigned char* tex) {
-    for (int j = 0; j < 16; j++) {
-        for (int i = 0; i < 16; i++) {
-            int pixel_x = x + i;
-            int pixel_y = y + j;
-            draw_pixel(pixel_x, pixel_y, tex[j * 16 + i]);
-        }
-    }
-}
-
-void draw_char(int x, int y, char c, char color) {
-    uint8_t *bitmap = (uint8_t *)font8x8_basic[(uint8_t)c];
-
-    for(int i = 0; i < 8; i++){
+    for (uint32_t i = 0; i < 8; i++){
         uint8_t bits = bitmap[i];
-        for(int j = 0; j < 8; j++){
-            if(bits & (1 << j)){
+        for (uint32_t j = 0; j < 8; j++){
+            if (bits & (1 << j)) {
                 draw_pixel(x + j, y + i, color);
             }
         }
     }
 }
 
-void draw_text(int x, int y, const char* str, char color) {
+void draw_word(int x, int y, const char* str, char color) {
     int current_x = x;
     while(*str){
         draw_char(current_x, y, *str, color);
@@ -76,89 +41,33 @@ void draw_text(int x, int y, const char* str, char color) {
     }
 }
 
-void mark_border() {
-    for (int x = 0; x < SCREEN_WIDTH; x += 16){
-        world_grid[x / 16][2] = TILE_WALL;
-        world_grid[x / 16][GRID_HEIGHT - 1] = TILE_WALL;
-    }
-
-    for (int y = 32; y < SCREEN_HEIGHT; y += 16){
-        world_grid[0][y / 16] = TILE_WALL;
-        world_grid[GRID_WIDTH - 1][y / 16] = TILE_WALL;
-    }
-}
-
-void mark_inner_squares() {
-    for(int x = 32; x < (SCREEN_WIDTH / 2); x += 32){
-        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
-            world_grid[x / 16][y / 16] = TILE_WALL;
-        }
-    }
-
-    for(int x = (SCREEN_WIDTH / 2) + 16; x < SCREEN_WIDTH - 32; x += 32){
-        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
-            world_grid[x / 16][y / 16] = TILE_WALL;
-        }
-    }
-}
-
-void mark_safe_zone() {
-    world_grid[1][3] = TILE_EMPTY;
-    world_grid[1][4] = TILE_EMPTY;
-    world_grid[2][3] = TILE_EMPTY;
-}
-
-void mark_bricks(float spawn_chance) {
-    for(int y = 2; y < GRID_HEIGHT - 1; y++) {
-        for(int x = 1; x < GRID_WIDTH - 1; x++) {
-
-            if (world_grid[x][y] != TILE_EMPTY) continue;
-
-            if (rand_range(0, 99) < spawn_chance * 100) {
-                world_grid[x][y] = TILE_BRICK;
-            }
-        }
-    }
-}
-
-void mark_bomb(int x, int y) {
-    world_grid[x][y] = TILE_BOMB;
-}
-
-void mark_world() {
-    mark_border();
-    mark_inner_squares();
-    mark_bricks(0.3f);
-    mark_safe_zone();
-}
-
-void draw_world() {
-    //draw header
+void draw_border() {
     for (int x = 0; x < SCREEN_WIDTH; x += 16){
         draw_square(x, 0, GREY_COLOR);
         draw_square(x, 16, GREY_COLOR);
     }
 
-    for (int y = 0; y < GRID_HEIGHT; y++) {
-    for (int x = 0; x < GRID_WIDTH; x++) {
+    for (int x = 0; x < SCREEN_WIDTH; x += 16){
+        draw_texture(x, 32, wall_texture);
+        draw_texture(x, SCREEN_HEIGHT - 16, wall_texture);
+    }
 
-        int sx = x * 16;
-        int sy = y * 16;
+    for (int y = 32; y < SCREEN_HEIGHT; y += 16){
+        draw_texture(0, y, wall_texture);
+        draw_texture(SCREEN_WIDTH - 16, y, wall_texture);
+    }
+}
 
-        switch (world_grid[x][y]) {
-            case TILE_WALL:
-                draw_texture(sx, sy, wall_texture);
-                break;
+void draw_inner_squares() {
+    for(int x = 32; x < (SCREEN_WIDTH / 2); x += 32){
+        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
+            draw_texture(x, y, wall_texture);
+        }
+    }
 
-            case TILE_BRICK:
-                draw_texture(sx, sy, brick_texture);
-                break;
-            case TILE_BOMB:
-                draw_texture(sx, sy, bomb_texture);
-
-            default:
-                break;
-            }
+    for(int x = (SCREEN_WIDTH / 2) + 16; x < SCREEN_WIDTH - 32; x += 32){
+        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
+            draw_texture(x, y, wall_texture);
         }
     }
 }
