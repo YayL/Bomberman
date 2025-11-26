@@ -15,7 +15,6 @@ void game_init() {
 	fill_background();
 	draw_border();
 	draw_inner_squares();
-	player_draw();
 }
 
 void game_run() {

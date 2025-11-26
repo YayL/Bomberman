@@ -14,6 +14,10 @@ volatile struct switches {
 
 static uint32_t switches_data;
 
-uint32_t switches_get_switch_state(uint32_t sw) {
-	return (switches_data >> sw) & 0x1;
+uint32_t switches_get_switch_state(uint32_t switch_nr) {
+	return (switches->data >> switch_nr) & 0x1;
+}
+
+uint32_t switches_get_all_switch_states() {
+	return switches->data & 0x1111111111;
 }
