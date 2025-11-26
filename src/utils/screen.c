@@ -58,7 +58,13 @@ void draw_border(){
 }
 
 void draw_inner_squares(){
-    for(int x = 32; x < SCREEN_WIDTH - 32; x += 32){
+    for(int x = 32; x < (SCREEN_WIDTH / 2); x += 32){
+        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
+            draw_texture(x, y, wall_texture);
+        }
+    }
+
+    for(int x = (SCREEN_WIDTH / 2) + 16; x < SCREEN_WIDTH - 32; x += 32){
         for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
             draw_texture(x, y, wall_texture);
         }

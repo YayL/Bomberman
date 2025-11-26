@@ -20,7 +20,8 @@ void game_init() {
 
 void game_run() {
 	while (is_running) {
-
+		player_update();
+		player_draw();
 		// uint32_t delta = timer_get_delta_us();
 		//
 		// puts("Delta: ");

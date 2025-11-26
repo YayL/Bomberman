@@ -1,11 +1,18 @@
 #include "player.h"
 #include "utils/screen.h"
 #include "dtekv-lib.h"
+#include "utils/switches.h"
 
-struct player player = {0};
+struct player player = {.speed = 1};
+
+void player_move_up() {
+	player.y -= player.speed;
+}
 
 void player_update() {
-
+	if (switches_get_switch_state(0)){
+		player_move_up();
+	}
 }
 
 void player_draw() {

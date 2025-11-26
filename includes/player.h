@@ -4,6 +4,7 @@
 struct player {
 	uint32_t x, y;
 	uint32_t score;
+	uint32_t speed;
 };
 
 #define PLAYER_HEIGHT 10
