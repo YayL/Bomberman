@@ -1,24 +1,18 @@
 #include "utils/screen.h"
 #include "dtekv-lib.h"
+#include "wall_texture.h"
 
-#define BACKGROUND_COLOR1 RGB(4, 7, 0)
-#define BACKGROUND_COLOR2 RGB(4, 7, 2)
+#define BACKGROUND_COLOR RGB(0, 4, 0)
 
-#define BORDER_COLOR RGB(7, 7, 3)
+#define GREY_COLOR RGB(4, 4, 2)
 
 void fill_background() {
-    char type = 0; 
-
-    for (int pixel = 0; pixel < SCREEN_WIDTH * SCREEN_HEIGHT; pixel++) {
-        if (pixel % BLOCK_SIZE == 0 && pixel % (SCREEN_WIDTH * BLOCK_SIZE) != 0) {
-            type = !type;
-        }
-
-        FRAMEBUFFER_ADDRESS[pixel] = (type ? BACKGROUND_COLOR1 : BACKGROUND_COLOR2);
+    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
+        FRAMEBUFFER_ADDRESS[i] = BACKGROUND_COLOR;
     }
 }
 
-void make_square(int x, int y, char color) {
+void draw_square(int x, int y, char color) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
         for (int i = 0; i < BLOCK_SIZE; i++) {
             int pixel_x = x + i;
@@ -30,22 +24,43 @@ void make_square(int x, int y, char color) {
     }
 }
 
+void draw_texture(int x, int y, const unsigned char* tex) {
+    for (int j = 0; j < 16; j++) {
+        for (int i = 0; i < 16; i++) {
+            int px = x + i;
+            int py = y + j;
+
+            if (px >= 0 && px < SCREEN_WIDTH &&
+                py >= 0 && py < SCREEN_HEIGHT) {
+
+                FRAMEBUFFER_ADDRESS[py * SCREEN_WIDTH + px] =
+                    tex[j * 16 + i];
+            }
+        }
+    }
+}
+
 void draw_border(){
     for (int x = 0; x < SCREEN_WIDTH; x += 16){
-        make_square(x, 32, BORDER_COLOR);
-        make_square(x, SCREEN_HEIGHT - 16, BORDER_COLOR);
+        draw_square(x, 0, GREY_COLOR);
+        draw_square(x, 16, GREY_COLOR);
+    }
+
+    for (int x = 0; x < SCREEN_WIDTH; x += 16){
+        draw_texture(x, 32, wall_texture);
+        draw_texture(x, SCREEN_HEIGHT - 16, wall_texture);
     }
 
     for (int y = 32; y < SCREEN_HEIGHT; y += 16){
-        make_square(0, y, BORDER_COLOR);
-        make_square(SCREEN_WIDTH - 16, y, BORDER_COLOR);
+        draw_texture(0, y, wall_texture);
+        draw_texture(SCREEN_WIDTH - 16, y, wall_texture);
     }
 }
 
 void draw_inner_squares(){
     for(int x = 32; x < SCREEN_WIDTH - 32; x += 32){
         for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
-            make_square(x, y, BORDER_COLOR);
+            draw_texture(x, y, wall_texture);
         }
     }
 }

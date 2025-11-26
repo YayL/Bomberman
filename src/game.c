@@ -4,6 +4,7 @@
 #include "utils/screen.h"
 #include "player.h"
 
+
 static char is_running = 1;
 
 void game_set_running_state(char state) {
