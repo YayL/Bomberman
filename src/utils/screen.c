@@ -7,9 +7,9 @@
 
 #define GREY_COLOR RGB(4, 4, 2)
 
-void fill_background() {
+void fill_background(char color) {
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-        FRAMEBUFFER_ADDRESS[i] = BACKGROUND_COLOR;
+        FRAMEBUFFER_ADDRESS[i] = color;
     }
 }
 

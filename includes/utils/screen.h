@@ -25,7 +25,7 @@
 
 #define RGB(R, G, B) (((R & 0b111) << 5) | ((G & 0b111) << 2) | (B & 0b11))
 
-void fill_background();
+void fill_background(char color);
 void draw_border();
 void draw_inner_squares();
 void draw_char(int x, int y, char c, char color);
