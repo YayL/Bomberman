@@ -3,6 +3,7 @@
 #include "utils/timer.h"
 #include "utils/screen.h"
 #include "player.h"
+#include "utils/button.h"
 
 #define LIGHT_GREY RGB(7, 7, 7)
 #define GREY RGB(4, 4, 2)
@@ -16,7 +17,7 @@ typedef enum{
 	GAME_STATE_PLAYING
 } game_state;
 
-static game_state currentState = GAME_STATE_PLAYING;
+static game_state currentState = GAME_STATE_MENU;
 
 static char is_running = 1;
 
@@ -44,8 +45,16 @@ void game_run() {
 	while (is_running) {
 		switch (currentState) {
 			case GAME_STATE_MENU:
+				if (button_get_state()) {
+				currentState = GAME_STATE_PLAYING;
+				}
 				break;
 			case GAME_STATE_PLAYING:
+				static int temp = 1;
+				if (temp) {
+				game_init();
+				temp = 0;
+				}
 				player_update();
 				player_draw();
 				break;
