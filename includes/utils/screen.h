@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <sys/_intsup.h>
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -27,3 +28,5 @@
 void fill_background();
 void draw_border();
 void draw_inner_squares();
+void draw_char(int x, int y, char c, char color);
+void draw_word(int x, int y, const char* str, char color);

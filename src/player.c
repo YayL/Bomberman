@@ -13,6 +13,18 @@ void player_move_up() {
 	player.y -= player.speed;
 }
 
+void player_move_down() {
+	player.y += player.speed;
+}
+
+void player_move_left() {
+	player.x -= player.speed;
+}
+
+void player_move_right() {
+	player.x += player.speed;
+}
+
 void player_update() {
 	// uint32_t switch_states = switches_get_all_switch_states();
 	// for (uint32_t i = 0; i <= 10; ++i) {
@@ -27,6 +39,18 @@ void player_update() {
 
 	if (switches_get_switch_state(0)){
 		player_move_up();
+	}
+
+	if (switches_get_switch_state(1)){
+		player_move_down();
+	}
+
+	if (switches_get_switch_state(8)){
+		player_move_right();
+	}
+
+	if (switches_get_switch_state(9)){
+		player_move_left();
 	}
 }
 

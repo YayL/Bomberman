@@ -1,6 +1,7 @@
 #include "utils/screen.h"
 #include "dtekv-lib.h"
 #include "wall_texture.h"
+#include "font8x8_basic.h"
 
 #define BACKGROUND_COLOR RGB(0, 4, 0)
 
@@ -12,14 +13,18 @@ void fill_background() {
     }
 }
 
+void draw_pixel(int x, int y, char color) {
+    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+        FRAMEBUFFER_ADDRESS[y * SCREEN_WIDTH + x] = color;
+    }
+}
+
 void draw_square(int x, int y, char color) {
     for (int j = 0; j < BLOCK_SIZE; j++) {
         for (int i = 0; i < BLOCK_SIZE; i++) {
             int pixel_x = x + i;
             int pixel_y = y + j;
-            if (pixel_x >= 0 && pixel_x < SCREEN_WIDTH && pixel_y >= 0 && pixel_y < SCREEN_HEIGHT) {
-                FRAMEBUFFER_ADDRESS[pixel_y * SCREEN_WIDTH + pixel_x] = color;
-            }
+            draw_pixel(pixel_x, pixel_y, color);
         }
     }
 }
@@ -27,20 +32,36 @@ void draw_square(int x, int y, char color) {
 void draw_texture(int x, int y, const unsigned char* tex) {
     for (int j = 0; j < 16; j++) {
         for (int i = 0; i < 16; i++) {
-            int px = x + i;
-            int py = y + j;
+            int pixel_x = x + i;
+            int pixel_y = y + j;
+            draw_pixel(pixel_x, pixel_y, tex[j * 16 + i]);
+        }
+    }
+}
 
-            if (px >= 0 && px < SCREEN_WIDTH &&
-                py >= 0 && py < SCREEN_HEIGHT) {
+void draw_char(int x, int y, char c, char color) {
+    uint8_t *bitmap = (uint8_t *)font8x8_basic[(uint8_t)c];
 
-                FRAMEBUFFER_ADDRESS[py * SCREEN_WIDTH + px] =
-                    tex[j * 16 + i];
+    for(int i = 0; i < 8; i++){
+        uint8_t bits = bitmap[i];
+        for(int j = 0; j < 8; j++){
+            if(bits & (1 << j)){
+                draw_pixel(x + j, y + i, color);
             }
         }
     }
 }
 
-void draw_border(){
+void draw_word(int x, int y, const char* str, char color) {
+    int current_x = x;
+    while(*str){
+        draw_char(current_x, y, *str, color);
+        current_x += 8;
+        str++;
+    }
+}
+
+void draw_border() {
     for (int x = 0; x < SCREEN_WIDTH; x += 16){
         draw_square(x, 0, GREY_COLOR);
         draw_square(x, 16, GREY_COLOR);
@@ -57,7 +78,7 @@ void draw_border(){
     }
 }
 
-void draw_inner_squares(){
+void draw_inner_squares() {
     for(int x = 32; x < (SCREEN_WIDTH / 2); x += 32){
         for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
             draw_texture(x, y, wall_texture);

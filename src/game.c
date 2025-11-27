@@ -4,6 +4,8 @@
 #include "utils/screen.h"
 #include "player.h"
 
+#define COLOR RGB(7, 7, 7)
+
 
 static char is_running = 1;
 
@@ -15,6 +17,7 @@ void game_init() {
 	fill_background();
 	draw_border();
 	draw_inner_squares();
+	draw_word(SCREEN_WIDTH / 2 - 40, 10, "BOMBERMAN", COLOR);
 }
 
 void game_run() {
