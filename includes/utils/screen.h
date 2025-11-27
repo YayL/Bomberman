@@ -26,7 +26,7 @@
 #define RGB(R, G, B) (((R & 0b111) << 5) | ((G & 0b111) << 2) | (B & 0b11))
 
 void fill_background(char color);
-void draw_border();
-void draw_inner_squares();
+void generate_bricks(float spawn_chance);
+void draw_world();
 void draw_char(int x, int y, char c, char color);
-void draw_word(int x, int y, const char* str, char color);
+void draw_text(int x, int y, const char* str, char color);

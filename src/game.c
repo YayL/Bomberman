@@ -29,14 +29,19 @@ void game_init() {
 	switch (currentState) {
 		case GAME_STATE_MENU:
 			fill_background(BLACK);
-			draw_word(SCREEN_WIDTH / 2 - 40, 10, "BOMBERMAN", YELLOW);
-			draw_word(SCREEN_WIDTH / 2 - 25, SCREEN_HEIGHT / 2 - 4, "START", WHITE);
+			draw_text(SCREEN_WIDTH / 2 - 36, 10, "BOMBERMAN", YELLOW);
+			draw_text(SCREEN_WIDTH / 2 - 84, SCREEN_HEIGHT / 2 - 20, "PRESS BUTTON TO START", WHITE);
+			draw_text(10, SCREEN_HEIGHT - 60, "UP:    SWITCH 0", WHITE);
+			draw_text(10, SCREEN_HEIGHT - 50, "DOWN:  SWITCH 1", WHITE);
+			draw_text(10, SCREEN_HEIGHT - 40, "RIGHT: SWITCH 8", WHITE);
+			draw_text(10, SCREEN_HEIGHT - 30, "LEFT:  SWITCH 9", WHITE);
+			draw_text(10, SCREEN_HEIGHT - 20, "BOMB:  BUTTON", WHITE);
 			break;
 		case GAME_STATE_PLAYING:
 			fill_background(BACKGROUND_GREEN);
-			draw_border();
-			draw_inner_squares();
-			draw_word(SCREEN_WIDTH / 2 - 40, 10, "BOMBERMAN", LIGHT_GREY);
+			generate_bricks(0.3f);
+			draw_world();
+			draw_text(SCREEN_WIDTH / 2 - 36, 10, "BOMBERMAN", LIGHT_GREY);
 			break;
 	}
 }
@@ -46,14 +51,14 @@ void game_run() {
 		switch (currentState) {
 			case GAME_STATE_MENU:
 				if (button_get_state()) {
-				currentState = GAME_STATE_PLAYING;
+					currentState = GAME_STATE_PLAYING;
 				}
 				break;
 			case GAME_STATE_PLAYING:
 				static int temp = 1;
 				if (temp) {
-				game_init();
-				temp = 0;
+					game_init();
+					temp = 0;
 				}
 				player_update();
 				player_draw();
