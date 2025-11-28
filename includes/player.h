@@ -12,3 +12,4 @@ struct player {
 
 void player_update();
 void player_draw();
+void mark_bomb_at_player_position();

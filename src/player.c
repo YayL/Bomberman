@@ -54,6 +54,13 @@ void player_update() {
 	}
 }
 
+void mark_bomb_at_player_position(){
+	int grid_x = SCREEN_X_TO_WORLD(player.x);
+	int grid_y = SCREEN_Y_TO_WORLD(player.y);
+
+	mark_bomb(grid_x, grid_y);
+}
+
 void player_draw() {
 	// player.x = WORLD_X_TO_SCREEN(6), player.y = WORLD_Y_TO_SCREEN(7);
 

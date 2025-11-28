@@ -25,8 +25,20 @@
 
 #define RGB(R, G, B) (((R & 0b111) << 5) | ((G & 0b111) << 2) | (B & 0b11))
 
+// World grid definitions
+#define GRID_WIDTH (SCREEN_WIDTH / BLOCK_SIZE)
+#define GRID_HEIGHT (SCREEN_HEIGHT / BLOCK_SIZE)
+#define TILE_EMPTY 0
+#define TILE_WALL 1
+#define TILE_BRICK 2
+#define TILE_BOMB 3
+extern int world_grid[GRID_WIDTH][GRID_HEIGHT];
+
+//Functions
 void fill_background(char color);
 void generate_bricks(float spawn_chance);
 void draw_world();
 void draw_char(int x, int y, char c, char color);
 void draw_text(int x, int y, const char* str, char color);
+void mark_bomb(int x, int y);
+void mark_world();

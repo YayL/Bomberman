@@ -3,16 +3,9 @@
 #include "wall_texture.h"
 #include "brick_texture.h"
 #include "font8x8_basic.h"
+#include "bomb_texture.h"
 
 #define GREY_COLOR RGB(4, 4, 2)
-
-#define GRID_WIDTH (SCREEN_WIDTH / BLOCK_SIZE)
-#define GRID_HEIGHT (SCREEN_HEIGHT / BLOCK_SIZE)
-#define TILE_EMPTY 0
-#define TILE_WALL 1
-#define TILE_BRICK 2
-
-int world_grid[GRID_WIDTH][GRID_HEIGHT];
 
 static uint32_t rng_state = 0x12345678;
 
@@ -22,6 +15,8 @@ uint32_t fast_rand() {
     rng_state ^= rng_state << 5;
     return rng_state;
 }
+
+int world_grid[GRID_WIDTH][GRID_HEIGHT];
 
 int rand_range(int min, int max) {
     return (fast_rand() % (max - min + 1)) + min;
@@ -113,7 +108,7 @@ void mark_safe_zone() {
     world_grid[2][3] = TILE_EMPTY;
 }
 
-void generate_bricks(float spawn_chance) {
+void mark_bricks(float spawn_chance) {
     for(int y = 2; y < GRID_HEIGHT - 1; y++) {
         for(int x = 1; x < GRID_WIDTH - 1; x++) {
 
@@ -126,11 +121,18 @@ void generate_bricks(float spawn_chance) {
     }
 }
 
-void draw_world() {
+void mark_bomb(int x, int y) {
+    world_grid[x][y] = TILE_BOMB;
+}
+
+void mark_world() {
     mark_border();
     mark_inner_squares();
+    mark_bricks(0.3f);
     mark_safe_zone();
+}
 
+void draw_world() {
     //draw header
     for (int x = 0; x < SCREEN_WIDTH; x += 16){
         draw_square(x, 0, GREY_COLOR);
@@ -151,6 +153,8 @@ void draw_world() {
             case TILE_BRICK:
                 draw_texture(sx, sy, brick_texture);
                 break;
+            case TILE_BOMB:
+                draw_texture(sx, sy, bomb_texture);
 
             default:
                 break;

@@ -39,29 +39,42 @@ void game_init() {
 			break;
 		case GAME_STATE_PLAYING:
 			fill_background(BACKGROUND_GREEN);
-			generate_bricks(0.3f);
-			draw_world();
+			mark_world();
 			draw_text(SCREEN_WIDTH / 2 - 36, 10, "BOMBERMAN", LIGHT_GREY);
 			break;
 	}
 }
 
 void game_run() {
+	char temp = 1;
+	char button_down = 0;
+	char previous_button_state = 0;
+
 	while (is_running) {
+		if(button_get_state() && !previous_button_state){
+			button_down = 1;
+		} else {
+			button_down = 0;
+		}
+		previous_button_state = button_get_state();
+
 		switch (currentState) {
 			case GAME_STATE_MENU:
-				if (button_get_state()) {
+				if (button_down) {
 					currentState = GAME_STATE_PLAYING;
 				}
 				break;
 			case GAME_STATE_PLAYING:
-				static int temp = 1;
 				if (temp) {
 					game_init();
 					temp = 0;
 				}
 				player_update();
 				player_draw();
+				draw_world();
+				if (button_down) {
+					mark_bomb_at_player_position();
+				}
 				break;
 		}
 		// uint32_t delta = timer_get_delta_us();

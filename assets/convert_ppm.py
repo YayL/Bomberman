@@ -1,8 +1,8 @@
 from PIL import Image
 
-img = Image.open("brick.ppm").convert("RGB")
+img = Image.open("bomb.ppm").convert("RGB")
 
-print("const unsigned char brick_texture[256] = {")
+print("const unsigned char bomb_texture[256] = {")
 
 for y in range(16):
     row_bytes = []
