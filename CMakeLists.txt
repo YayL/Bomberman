@@ -40,10 +40,8 @@ function(embed_resource resource_file_name variable_name)
     file(WRITE "includes/assets/${resource_file_name}.h" "${source}")
 endfunction()
 
-embed_resource("test.txt" "TEST")
-
 # Find sources
-file(GLOB_RECURSE SOURCES src/*.c src/*.S lib/*.c lib/*.S)
+file(GLOB_RECURSE SOURCES src/**.c src/*.S lib/*.c lib/*.S)
 
 # Build executable
 add_executable(bomberman ${SOURCES})
@@ -56,7 +54,6 @@ target_link_options(bomberman PRIVATE -T${CMAKE_SOURCE_DIR}/lib/dtekv-script.lds
 target_link_libraries(bomberman PRIVATE ${CMAKE_SOURCE_DIR}/lib/softfloat.a)
 target_include_directories(bomberman PRIVATE 
     ${CMAKE_SOURCE_DIR}/includes
-    ${CMAKE_SOURCE_DIR}/assets
     ${CMAKE_SOURCE_DIR}/lib
 )
 

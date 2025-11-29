@@ -1,25 +1,7 @@
-*
+.cache
 
-!.gitignore
+includes/assets/
+build/
+
+*.txt
 !CMakeLists.txt
-!Makefile
-!COPYING
-!README.md
-
-!src/
-!src/*
-!src/**
-
-!includes/
-!includes/*
-!includes/**
-
-# Ignore generated directory includes/assets
-includes/assets/*
-
-!lib/
-!lib/*
-
-!assets/
-!assets/*
-!assets/**

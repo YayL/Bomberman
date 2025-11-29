@@ -1,30 +1,101 @@
 #include "utils/screen.h"
 #include "dtekv-lib.h"
-#include "wall_texture.h"
-#include "font8x8_basic.h"
+#include "assets/font.h"
+#include "utils/mem.h"
 
-#define BACKGROUND_COLOR RGB(0, 4, 0)
+// The current drawable frame buffer
+static volatile char * FRAMEBUFFER_ADDRESS = FRAMEBUFFER_2_ADDRESS;
 
-#define GREY_COLOR RGB(4, 4, 2)
+volatile struct vga_dma_controller {
+    volatile char * buffer;
+    volatile char * backbuffer;
 
-void fill_background(char color) {
-    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-        FRAMEBUFFER_ADDRESS[i] = color;
+    volatile struct vga_dma_controller_resolution {
+        uint16_t x;
+        uint16_t y;
+    } resolution;
+
+    volatile struct vga_dma_controller_status {
+        uint32_t swap_status : 1;
+        uint32_t addr_mode : 1;
+        uint32_t _ : 2;
+        uint32_t bytes_of_color : 4;
+        uint8_t x_coord_addr_with;
+        uint8_t y_coord_addr_with;
+    } status;
+} * vga_dma_controller = (volatile struct vga_dma_controller *) VGA_DMA_CONTROLLER_ADDRESS;
+
+void screen_init() {
+    fill_background(BLACK);
+    screen_blit();
+}
+
+void screen_blit() {
+    vga_dma_controller->backbuffer = FRAMEBUFFER_ADDRESS; // Draw framebuffer
+    vga_dma_controller->buffer = 0; // request swap
+
+    FRAMEBUFFER_ADDRESS = (FRAMEBUFFER_ADDRESS == FRAMEBUFFER_1_ADDRESS)
+                            ? FRAMEBUFFER_2_ADDRESS
+                            : FRAMEBUFFER_1_ADDRESS;
+
+    // Wait for buffer swap so we can start drawing to the previously displayed buffer
+    while (vga_dma_controller->status.swap_status);
+
+    if (FRAMEBUFFER_ADDRESS == vga_dma_controller->buffer) {
+        puts("NOO!\n");
+        exit();
     }
 }
 
-void draw_pixel(int x, int y, char color) {
-    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
+volatile char * screen_get_framebuffer_addr() {
+    return FRAMEBUFFER_ADDRESS;
+}
+
+void fill_background(uint8_t color) {
+    const uint32_t pattern = (color << 24) | (color << 16) | (color << 8) | color;
+    const uint32_t num_words = SCREEN_WIDTH * SCREEN_HEIGHT;
+    memset(FRAMEBUFFER_ADDRESS, pattern, num_words);
+}
+
+void draw_rectangle(uint32_t x_start, uint32_t y_start, uint32_t width, uint32_t height, uint8_t color) {
+    const uint32_t pattern = (color << 24) | (color << 16) | (color << 8) | (color);
+
+    for (int y = 0; y < height; y++) {
+        const uint32_t fb_addr_offset = (y_start + y) * SCREEN_WIDTH + x_start;
+        memset(&FRAMEBUFFER_ADDRESS[fb_addr_offset], pattern, width);
+    }
+}
+
+void draw_texture(uint32_t x_start, uint32_t y_start, const uint8_t * tex) {
+    if (SCREEN_WIDTH < x_start + BLOCK_SIZE) {
+        puts("Texture draw OOB: X");
+        exit();
+    } else if (SCREEN_HEIGHT < y_start + BLOCK_SIZE) {
+        puts("Texture draw OOB: Y");
+        exit();
+    }
+
+    const uint32_t tex_height = BLOCK_SIZE;
+    const uint32_t tex_width = BLOCK_SIZE;
+
+    for (uint32_t y = 0; y < tex_height; y++) {
+        const uint32_t fb_addr_offset = (y_start + y) * SCREEN_WIDTH + x_start;
+        memcpy(&FRAMEBUFFER_ADDRESS[fb_addr_offset], &tex[y * tex_width], tex_width);
+    }
+}
+
+void draw_pixel(uint32_t x, uint32_t y, uint8_t color) {
+    if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT) {
         FRAMEBUFFER_ADDRESS[y * SCREEN_WIDTH + x] = color;
     }
 }
 
-inline void draw_char(uint32_t x, uint32_t y, char c, uint8_t color) {
-    uint8_t * bitmap = (uint8_t *) font8x8_basic[(uint8_t)c];
+void draw_char(uint32_t x, uint32_t y, char c, uint8_t color) {
+    uint8_t * bitmap = (uint8_t *) FONT[(uint8_t) c];
 
-    for (uint32_t i = 0; i < 8; i++){
+    for (int i = 0; i < 8; i++) {
         uint8_t bits = bitmap[i];
-        for (uint32_t j = 0; j < 8; j++){
+        for (int j = 0; j < 8; j++) {
             if (bits & (1 << j)) {
                 draw_pixel(x + j, y + i, color);
             }
@@ -32,42 +103,12 @@ inline void draw_char(uint32_t x, uint32_t y, char c, uint8_t color) {
     }
 }
 
-void draw_word(int x, int y, const char* str, char color) {
-    int current_x = x;
-    while(*str){
+void draw_text(uint32_t x, uint32_t y, const char * str, uint8_t color) {
+    uint32_t current_x = x;
+
+    while (*str) {
         draw_char(current_x, y, *str, color);
         current_x += 8;
         str++;
-    }
-}
-
-void draw_border() {
-    for (int x = 0; x < SCREEN_WIDTH; x += 16){
-        draw_square(x, 0, GREY_COLOR);
-        draw_square(x, 16, GREY_COLOR);
-    }
-
-    for (int x = 0; x < SCREEN_WIDTH; x += 16){
-        draw_texture(x, 32, wall_texture);
-        draw_texture(x, SCREEN_HEIGHT - 16, wall_texture);
-    }
-
-    for (int y = 32; y < SCREEN_HEIGHT; y += 16){
-        draw_texture(0, y, wall_texture);
-        draw_texture(SCREEN_WIDTH - 16, y, wall_texture);
-    }
-}
-
-void draw_inner_squares() {
-    for(int x = 32; x < (SCREEN_WIDTH / 2); x += 32){
-        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
-            draw_texture(x, y, wall_texture);
-        }
-    }
-
-    for(int x = (SCREEN_WIDTH / 2) + 16; x < SCREEN_WIDTH - 32; x += 32){
-        for(int y = 64; y < SCREEN_HEIGHT - 32; y += 32){
-            draw_texture(x, y, wall_texture);
-        }
     }
 }

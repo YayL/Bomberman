@@ -1,11 +1,25 @@
 #include "utils/button.h"
 
-#define  BUTTON_ADDRESS 0x040000d0
+#define BUTTONS_ADDRESS 0x040000d0
 
-volatile struct button {
-    uint32_t data;
-} *button = (void *) BUTTON_ADDRESS;
+volatile struct buttons {
+	uint32_t data;
+	uint32_t direction;
+	uint32_t interruptmask;
+	uint32_t edgecapture;
+	uint32_t outset;
+	uint32_t outclear;
+} * buttons = (void *) BUTTONS_ADDRESS;
 
-uint32_t button_get_state(){
-    return (button->data);
+char button_pressed = 0;
+
+uint32_t buttons_get_states() {
+    return (buttons->data);
+}
+
+char button_get_is_initial_press() {
+	const char new_button_state = buttons->data & 0x1;
+	const char ret = !button_pressed && new_button_state;
+	button_pressed = new_button_state;
+	return ret;
 }
