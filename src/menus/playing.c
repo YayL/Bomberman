@@ -1,4 +1,4 @@
-#include "menus/classic.h"
+#include "menus/playing.h"
 
 #include "common.h"
 
@@ -11,16 +11,16 @@ void draw_border();
 void draw_fps(uint32_t delta);
 void draw_inner_squares();
 
-void classic_menu_init() {
+void playing_menu_init() {
 }
 
-void classic_menu_update(uint32_t delta) {
+void playing_menu_update(uint32_t delta) {
 	player_update();
 }
 
 char FPS_TEXT[8] = {'F', 'P', 'S', ':', ' ', '6', '0', 0};
 
-void classic_menu_draw(uint32_t delta) {
+void playing_menu_draw(uint32_t delta) {
     fill_background(BACKGROUND_GREEN);
 	draw_border();
 	draw_inner_squares();

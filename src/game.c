@@ -2,11 +2,9 @@
 #include "dtekv-lib.h"
 #include "utils/timer.h"
 #include "utils/screen.h"
-#include "player.h"
-#include "utils/button.h"
 
 #include "menus/start.h"
-#include "menus/classic.h"
+#include "menus/playing.h"
 
 enum game_state {
 	GAME_STATE_NONE,
@@ -15,8 +13,9 @@ enum game_state {
 };
 
 static enum game_state current_state = GAME_STATE_NONE;
+
 #define TARGET_FPS 60
-#define TARGET_TIME_UPDATE (1e6 / TARGET_FPS)
+#define TARGET_TIME_UPDATE (1e6 / TARGET_FPS) // 1e6 is 1 second
 
 static char is_running = 1;
 static uint32_t time_since_last_update;
@@ -30,7 +29,7 @@ void game_set_game_state(enum game_state state) {
 		case GAME_STATE_START:
 			start_menu_init(); break;
 		case GAME_STATE_CLASSIC:
-			classic_menu_init(); break;
+			playing_menu_init(); break;
 		default:
 			puts("Tried setting game state to invalid active game state");
 			exit();
@@ -87,8 +86,8 @@ void game_run() {
 					mark_bomb_at_player_position();
 				}
 			case GAME_STATE_CLASSIC:
-				classic_menu_update(time_since_last_update);
-				classic_menu_draw(time_since_last_update);
+				playing_menu_update(time_since_last_update);
+				playing_menu_draw(time_since_last_update);
 				break;
 			default:
 				puts("Invalid game state in game loop");

@@ -1,10 +1,8 @@
 #include "player.h"
-#include "common.h"
-#include "utils/mem.h"
 #include "utils/screen.h"
 #include "utils/switches.h"
 
-struct player player = {
+static struct player player = {
 	.speed = 1,
 	.x = WORLD_X_TO_SCREEN(1),
 	.y = WORLD_Y_TO_SCREEN(3)

@@ -12,8 +12,6 @@ volatile struct switches {
 	uint32_t outclear;
 } * switches = (void *) SWITCH_ADDRESS;
 
-static uint32_t switches_data;
-
 uint32_t switches_get_switch_state(uint32_t switch_nr) {
 	return (switches->data >> switch_nr) & 0x1;
 }
