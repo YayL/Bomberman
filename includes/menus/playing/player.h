@@ -2,7 +2,9 @@
 #include <stdint.h>
 
 struct player {
-	uint32_t x, y;
+	struct player_position {
+		uint32_t x, y; // Screen coordinates
+	} position;
 	uint32_t score;
 	uint32_t speed;
 };
@@ -13,3 +15,5 @@ struct player {
 void player_update();
 void player_draw();
 void mark_bomb_at_player_position();
+
+struct player_position player_get_position();

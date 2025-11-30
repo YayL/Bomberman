@@ -1,20 +1,25 @@
-#include "player.h"
+#include "menus/playing/player.h"
+
 #include "utils/screen.h"
 #include "utils/switches.h"
 #include "utils/button.h"
+
 #include "menus/playing/map.h"
+#include "menus/playing/bomb.h"
 
 static struct player player = {
 	.speed = 1,
-	.x = GRID_X_TO_SCREEN(1) + 5,
-	.y = GRID_Y_TO_SCREEN(3) + 5
+	.position = { 
+		.x = GRID_X_TO_SCREEN(1) + 5,
+		.y = GRID_Y_TO_SCREEN(3) + 5
+	}
 };
 
 #define IS_AVAILABLE(X, Y) map_is_empty(SCREEN_X_TO_GRID(X), SCREEN_Y_TO_GRID(Y))
 #define CLAMP(VALUE, MIN, MAX) if (VALUE < MIN) { VALUE = MIN; } else if (MAX < VALUE) { VALUE = MAX; }
 inline void player_move(int32_t dx, int32_t dy) {
-	int32_t next_x = player.x + dx * player.speed;
-	int32_t next_y = player.y + dy * player.speed;
+	int32_t next_x = player.position.x + dx * player.speed;
+	int32_t next_y = player.position.y + dy * player.speed;
 
 	// This should never be a worry but just in case
 	CLAMP(next_x, 0, SCREEN_WIDTH - PLAYER_WIDTH);
@@ -25,10 +30,10 @@ inline void player_move(int32_t dx, int32_t dy) {
 
 	// Unsure why the -1 are neccessary but they fixed an ¿issue?
 
-	const char top_left_dx = !IS_AVAILABLE(next_x, player.y);
-	const char top_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.y);
-	const char bottom_left_dx = !IS_AVAILABLE(next_x, player.y + PLAYER_HEIGHT - 1);
-	const char bottom_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.y + PLAYER_HEIGHT - 1);
+	const char top_left_dx = !IS_AVAILABLE(next_x, player.position.y);
+	const char top_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.position.y);
+	const char bottom_left_dx = !IS_AVAILABLE(next_x, player.position.y + PLAYER_HEIGHT - 1);
+	const char bottom_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.position.y + PLAYER_HEIGHT - 1);
 
 	if (dx < 0 && (top_left_dx || bottom_left_dx)) {
 		// Going left and top left or bottom left intersects
@@ -38,10 +43,10 @@ inline void player_move(int32_t dx, int32_t dy) {
 		next_x = GRID_X_TO_SCREEN(SCREEN_X_TO_GRID(next_x + PLAYER_WIDTH)) - PLAYER_WIDTH;
 	}
 
-	const char top_left_dy = !IS_AVAILABLE(player.x, next_y);
-	const char top_right_dy = !IS_AVAILABLE(player.x + PLAYER_WIDTH - 1, next_y);
-	const char bottom_left_dy = !IS_AVAILABLE(player.x, next_y + PLAYER_HEIGHT - 1);
-	const char bottom_right_dy = !IS_AVAILABLE(player.x + PLAYER_WIDTH - 1, next_y + PLAYER_HEIGHT - 1);
+	const char top_left_dy = !IS_AVAILABLE(player.position.x, next_y);
+	const char top_right_dy = !IS_AVAILABLE(player.position.x + PLAYER_WIDTH - 1, next_y);
+	const char bottom_left_dy = !IS_AVAILABLE(player.position.x, next_y + PLAYER_HEIGHT - 1);
+	const char bottom_right_dy = !IS_AVAILABLE(player.position.x + PLAYER_WIDTH - 1, next_y + PLAYER_HEIGHT - 1);
 
 	if (dy < 0 && (top_left_dy || top_right_dy)) {
 		// Going up and top left or top right intersects
@@ -54,13 +59,16 @@ inline void player_move(int32_t dx, int32_t dy) {
 	// Since we don't check dxdy it is most likely possible to glitch through a
 	// block by going diagonally through it
 
-	player.x = next_x;
-	player.y = next_y;
+	player.position.x = next_x;
+	player.position.y = next_y;
 }
 
 void player_update() {
 	if (button_get_is_initial_press()) {
-		map_place_bomb(SCREEN_X_TO_GRID(player.x), SCREEN_Y_TO_GRID(player.y));
+		bomb_place(
+			SCREEN_X_TO_GRID(player.position.x),
+			SCREEN_Y_TO_GRID(player.position.y)
+		);
 	}
 
 	const uint32_t switches = switches_get_all_switch_states();
@@ -89,13 +97,10 @@ void player_update() {
 	player_move(dx, dy);
 }
 
-void mark_bomb_at_player_position() {
-	int grid_x = SCREEN_X_TO_GRID(player.x);
-	int grid_y = SCREEN_Y_TO_GRID(player.y);
-
-	// mark_bomb(grid_x, grid_y);
+void player_draw() {
+	draw_rectangle(player.position.x, player.position.y, PLAYER_WIDTH, PLAYER_HEIGHT, RGB(7, 0, 0));
 }
 
-void player_draw() {
-	draw_rectangle(player.x, player.y, PLAYER_WIDTH, PLAYER_HEIGHT, RGB(7, 0, 0));
+struct player_position player_get_position() {
+	return player.position;
 }

@@ -3,9 +3,6 @@
 #include "utils/timer.h"
 #include "utils/screen.h"
 
-#include "player.h"
-#include "utils/button.h"
-
 #include "menus/start.h"
 #include "menus/playing.h"
 

@@ -1,8 +1,8 @@
 #include "menus/playing.h"
 
-#include "player.h"
 #include "utils/screen.h"
 #include "menus/playing/map.h"
+#include "menus/playing/player.h"
 
 void draw_fps(uint32_t delta);
 
