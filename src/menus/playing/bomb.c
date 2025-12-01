@@ -51,6 +51,9 @@ void bombs_draw() {
 }
 
 void bomb_place(uint32_t x, uint32_t y) {
+	ASSERT1(x < GRID_WIDTH);
+	ASSERT1(y < GRID_HEIGHT);
+
 	puts("Bombs: ");
 	print_dec(bombs_placed_count);
 	putc('\n');
