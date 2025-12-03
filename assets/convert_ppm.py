@@ -1,8 +1,8 @@
 from PIL import Image
 
-img = Image.open("ex_side.ppm").convert("RGB")
+img = Image.open("ex_center.ppm").convert("RGB")
 
-print("const unsigned char ex_side_texture[256] = {")
+print("const unsigned char EX_CENTER_TEXTURE[256] = {")
 
 for y in range(16):
     row_bytes = []

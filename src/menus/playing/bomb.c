@@ -1,7 +1,10 @@
 #include "menus/playing/bomb.h"
+#include "menus/playing/map.h"
 
-#include "utils/screen.h"
+#include "utils/screen.h""
 #include "assets/bomb_texture.h"
+#include "assets/ex_center_texture.h"
+#include "assets/ex_side_texture.h"
 
 static uint32_t bombs_placed_count = 0;
 static struct bomb bombs[MAX_BOMB_COUNT] = {0};
@@ -57,6 +60,10 @@ void bombs_update(uint32_t delta) {
 	}
 }
 
+void check_valid_tile(int x, int y){
+	
+}
+
 static inline void bomb_draw(struct bomb bomb) {
 	switch (bomb.state) {
 		case BOMB_STATE_PRIMED:
@@ -67,7 +74,14 @@ static inline void bomb_draw(struct bomb bomb) {
 			);
 		break;
 		case BOMB_STATE_EXPLODED:
-			// draw bomb exploded
+			draw_texture(
+				GRID_X_TO_SCREEN(bomb.position.x), 
+				GRID_Y_TO_SCREEN(bomb.position.y), 
+				EX_CENTER_TEXTURE
+			);
+
+			check_valid_tile(GRID_X_TO_SCREEN(bomb.position.x), GRID_Y_TO_SCREEN(bomb.position.y));
+
 		break;
 		default:
 			puts("bomb_draw called with invalid bomb state");

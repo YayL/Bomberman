@@ -94,6 +94,13 @@ void map_update(uint32_t delta) {
 	bombs_update(delta);
 }
 
+char map_is_stone(uint32_t x, uint32_t y) {
+	ASSERT1(x < GRID_WIDTH);
+	ASSERT1(y < GRID_HEIGHT);
+
+	return map[y][x] == TILE_STONE;
+}
+
 char map_is_empty(uint32_t x, uint32_t y) {
 	ASSERT1(x < GRID_WIDTH);
 	ASSERT1(y < GRID_HEIGHT);
