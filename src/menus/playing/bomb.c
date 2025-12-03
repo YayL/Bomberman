@@ -37,14 +37,6 @@ static inline void bomb_draw(struct bomb bomb) {
 }
 
 void bombs_draw() {
-	puts("Bombs: ");
-	print_dec(bombs_placed_count);
-	putc('\n');
-
-	puts("Address: ");
-	print_hex32((uint32_t) &bombs_placed_count);
-	putc('\n');
-
 	for (uint32_t i = 0; i < bombs_placed_count; ++i) {
 		bomb_draw(bombs[i]);
 	}
@@ -53,10 +45,6 @@ void bombs_draw() {
 void bomb_place(uint32_t x, uint32_t y) {
 	ASSERT1(x < GRID_WIDTH);
 	ASSERT1(y < GRID_HEIGHT);
-
-	puts("Bombs: ");
-	print_dec(bombs_placed_count);
-	putc('\n');
 
 	if (bombs_placed_count == MAX_BOMB_COUNT) {
 		return;

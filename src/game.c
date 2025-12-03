@@ -38,7 +38,6 @@ void game_init() {
 }
 
 void game_step(uint32_t delta) {
-	puts("Game step\n");
 	switch (current_state) {
 		case GAME_STATE_START:
 			start_menu_update();

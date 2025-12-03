@@ -45,7 +45,7 @@ void map_init() {
 	random_seed(timer_get_delta_us_no_reset());
 
 	// Place breakable stone blocks
-	for (uint32_t y = GRID_Y_START; y < GRID_X_END; ++y) {
+	for (uint32_t y = GRID_Y_START; y < GRID_Y_END; ++y) {
 		for (uint32_t x = GRID_X_START; x < GRID_X_END; ++x) {
 			if (!map_is_empty(x, y)) {
 				continue;

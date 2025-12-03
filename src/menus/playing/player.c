@@ -17,7 +17,7 @@ static struct player player = {
 
 #define IS_AVAILABLE(X, Y) map_is_empty(SCREEN_X_TO_GRID(X), SCREEN_Y_TO_GRID(Y))
 #define CLAMP(VALUE, MIN, MAX) if (VALUE < MIN) { VALUE = MIN; } else if (MAX < VALUE) { VALUE = MAX; }
-inline void player_move(int32_t dx, int32_t dy) {
+static inline void player_move(int32_t dx, int32_t dy) {
 	int32_t next_x = player.position.x + dx * player.speed;
 	int32_t next_y = player.position.y + dy * player.speed;
 
