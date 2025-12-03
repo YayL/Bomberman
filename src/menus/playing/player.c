@@ -63,7 +63,7 @@ static inline void player_move(int32_t dx, int32_t dy) {
 	player.position.y = next_y;
 }
 
-void player_update() {
+void player_update(uint32_t delta) {
 	if (button_get_is_initial_press()) {
 		bomb_place(
 			SCREEN_X_TO_GRID(player.position.x),

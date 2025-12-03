@@ -12,8 +12,9 @@ struct player {
 #define PLAYER_HEIGHT 10
 #define PLAYER_WIDTH  10
 
-void player_update();
+void player_update(uint32_t delta);
 void player_draw();
+
 void mark_bomb_at_player_position();
 
 struct player_position player_get_position();

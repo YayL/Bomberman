@@ -11,7 +11,8 @@ void playing_menu_init() {
 }
 
 void playing_menu_update(uint32_t delta) {
-	player_update();
+	player_update(delta);
+    map_update(delta);
 }
 
 char FPS_TEXT[8] = {'F', 'P', 'S', ':', ' ', '6', '0', 0};

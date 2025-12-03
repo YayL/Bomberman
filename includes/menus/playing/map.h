@@ -10,6 +10,7 @@ enum __attribute__ ((__packed__)) map_tiles {
 
 void map_init();
 void map_draw();
+void map_update(uint32_t delta);
 
 void map_place_bomb(uint32_t x, uint32_t y);
 char map_is_empty(uint32_t x, uint32_t y);

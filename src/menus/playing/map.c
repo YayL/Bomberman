@@ -90,6 +90,10 @@ void map_draw() {
 	bombs_draw();
 }
 
+void map_update(uint32_t delta) {
+	bombs_update(delta);
+}
+
 char map_is_empty(uint32_t x, uint32_t y) {
 	ASSERT1(x < GRID_WIDTH);
 	ASSERT1(y < GRID_HEIGHT);
