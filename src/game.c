@@ -38,6 +38,7 @@ void game_init() {
 }
 
 void game_step(uint32_t delta) {
+	puts("Game step\n");
 	switch (current_state) {
 		case GAME_STATE_START:
 			start_menu_update();
@@ -68,5 +69,11 @@ void game_run() {
 
 		game_step(time_since_last_update);
 		time_since_last_update = 0;
+
+		#ifdef EMULATOR
+		for (uint32_t i = 0; i < 50000; ++i) { // wait roughly 5ms
+			__asm__("nop");
+		}
+		#endif
 	}
 }
