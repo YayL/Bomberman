@@ -1,6 +1,5 @@
 .cache
 
-includes/assets/
 build/
 
 *.txt
