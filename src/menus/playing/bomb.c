@@ -66,39 +66,47 @@ void draw_valid_tile(struct bomb *bomb) {
 	uint32_t y = bomb->position.y;
 
 	// Up
-	if (y > 0 && map_is_empty(x, y - 1)) {
+	if (y > 0 && (map_is_empty(x, y - 1) || map_is_stone(x, y - 1))) {
 		draw_texture(
 			GRID_X_TO_SCREEN(x),
 			GRID_Y_TO_SCREEN(y - 1),
 			EX_VERTICAL_TEXTURE
 		);
+		
+		map_set_tile(x, y - 1, TILE_EMPTY);
 	}
 
 	// Down
-	if (y < GRID_HEIGHT - 1 && map_is_empty(x, y + 1)) {
+	if (y < GRID_HEIGHT - 1 && (map_is_empty(x, y + 1) || map_is_stone(x, y + 1))) {
 		draw_texture(
 			GRID_X_TO_SCREEN(x),
 			GRID_Y_TO_SCREEN(y + 1),
 			EX_VERTICAL_TEXTURE
 		);
+
+		map_set_tile(x, y + 1, TILE_EMPTY);
 	}
 
 	// Left
-	if (x > 0 && map_is_empty(x - 1, y)) {
+	if (x > 0 && (map_is_empty(x - 1, y) || map_is_stone(x - 1, y))) {
 		draw_texture(
 			GRID_X_TO_SCREEN(x - 1),
 			GRID_Y_TO_SCREEN(y),
 			EX_HORIZONTAL_TEXTURE
 		);
+
+		map_set_tile(x - 1, y, TILE_EMPTY);
 	}
 
 	// Right
-	if (x < GRID_WIDTH - 1 && map_is_empty(x + 1, y)) {
+	if (x < GRID_WIDTH - 1 && (map_is_empty(x + 1, y) || map_is_stone(x + 1, y))) {
 		draw_texture(
 			GRID_X_TO_SCREEN(x + 1),
 			GRID_Y_TO_SCREEN(y),
 			EX_HORIZONTAL_TEXTURE
 		);
+
+		map_set_tile(x + 1, y, TILE_EMPTY);
 	}
 }
 

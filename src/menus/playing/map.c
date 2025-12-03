@@ -94,6 +94,12 @@ void map_update(uint32_t delta) {
 	bombs_update(delta);
 }
 
+void map_set_tile(uint32_t x, uint32_t y, enum map_tiles tile) {
+    ASSERT1(x < GRID_WIDTH);
+    ASSERT1(y < GRID_HEIGHT);
+    map[y][x] = tile;
+}
+
 char map_is_stone(uint32_t x, uint32_t y) {
 	ASSERT1(x < GRID_WIDTH);
 	ASSERT1(y < GRID_HEIGHT);
