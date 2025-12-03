@@ -1,10 +1,11 @@
 #include "menus/playing/bomb.h"
 #include "menus/playing/map.h"
 
-#include "utils/screen.h""
+#include "utils/screen.h"
 #include "assets/bomb_texture.h"
 #include "assets/ex_center_texture.h"
-#include "assets/ex_side_texture.h"
+#include "assets/ex_horizontal_texture.h"
+#include "assets/ex_vertical_texture.h"
 
 static uint32_t bombs_placed_count = 0;
 static struct bomb bombs[MAX_BOMB_COUNT] = {0};
@@ -60,8 +61,45 @@ void bombs_update(uint32_t delta) {
 	}
 }
 
-void check_valid_tile(int x, int y){
-	
+void draw_valid_tile(struct bomb *bomb) {
+	uint32_t x = bomb->position.x;
+	uint32_t y = bomb->position.y;
+
+	// Up
+	if (y > 0 && map_is_empty(x, y - 1)) {
+		draw_texture(
+			GRID_X_TO_SCREEN(x),
+			GRID_Y_TO_SCREEN(y - 1),
+			EX_VERTICAL_TEXTURE
+		);
+	}
+
+	// Down
+	if (y < GRID_HEIGHT - 1 && map_is_empty(x, y + 1)) {
+		draw_texture(
+			GRID_X_TO_SCREEN(x),
+			GRID_Y_TO_SCREEN(y + 1),
+			EX_VERTICAL_TEXTURE
+		);
+	}
+
+	// Left
+	if (x > 0 && map_is_empty(x - 1, y)) {
+		draw_texture(
+			GRID_X_TO_SCREEN(x - 1),
+			GRID_Y_TO_SCREEN(y),
+			EX_HORIZONTAL_TEXTURE
+		);
+	}
+
+	// Right
+	if (x < GRID_WIDTH - 1 && map_is_empty(x + 1, y)) {
+		draw_texture(
+			GRID_X_TO_SCREEN(x + 1),
+			GRID_Y_TO_SCREEN(y),
+			EX_HORIZONTAL_TEXTURE
+		);
+	}
 }
 
 static inline void bomb_draw(struct bomb bomb) {
@@ -80,7 +118,7 @@ static inline void bomb_draw(struct bomb bomb) {
 				EX_CENTER_TEXTURE
 			);
 
-			check_valid_tile(GRID_X_TO_SCREEN(bomb.position.x), GRID_Y_TO_SCREEN(bomb.position.y));
+			draw_valid_tile(&bomb);
 
 		break;
 		default:
