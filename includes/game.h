@@ -3,7 +3,8 @@
 enum game_state {
 	GAME_STATE_NONE,
 	GAME_STATE_START,
-	GAME_STATE_PLAYING
+	GAME_STATE_PLAYING,
+	GAME_STATE_GAMEOVER
 };
 
 void game_set_is_running(char state);

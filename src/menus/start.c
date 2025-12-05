@@ -17,7 +17,7 @@ void start_menu_update() {
 void start_menu_draw() {
 	fill_background(BLACK);
 	draw_text(SCREEN_WIDTH / 2 - 40, 10, "BOMBERMAN", YELLOW);
-	draw_text(SCREEN_WIDTH / 2 - 25, SCREEN_HEIGHT / 2 - 4, "START", WHITE);
+	draw_text(SCREEN_WIDTH / 2 - 72, SCREEN_HEIGHT / 2 - 4, "PRESS BTN TO START", WHITE);
 
 	draw_text(10, SCREEN_HEIGHT - 60, "UP:    SWITCH 1", WHITE);
 	draw_text(10, SCREEN_HEIGHT - 50, "DOWN:  SWITCH 8", WHITE);

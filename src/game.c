@@ -5,6 +5,7 @@
 
 #include "menus/start.h"
 #include "menus/playing.h"
+#include "menus/gameover.h"
 
 static enum game_state current_state = GAME_STATE_NONE;
 
@@ -24,6 +25,8 @@ void game_set_game_state(enum game_state state) {
 			start_menu_init(); break;
 		case GAME_STATE_PLAYING:
 			playing_menu_init(); break;
+		case GAME_STATE_GAMEOVER:
+			gameover_menu_init(); break;
 		default:
 			puts("Tried setting game state to invalid active game state");
 			exit();
@@ -46,6 +49,10 @@ void game_step(uint32_t delta) {
 		case GAME_STATE_PLAYING:
 			playing_menu_update(time_since_last_update);
 			playing_menu_draw(time_since_last_update);
+			break;
+		case GAME_STATE_GAMEOVER:
+			gameover_menu_update();
+			gameover_menu_draw();
 			break;
 		default:
 			puts("Invalid game state in game loop");

@@ -65,6 +65,12 @@ static inline void player_move(int32_t dx, int32_t dy) {
 	player.position.y = next_y;
 }
 
+void player_init(){
+	player.position.x = GRID_X_TO_SCREEN(1);
+	player.position.y = GRID_Y_TO_SCREEN(3);
+	player.speed = 1;
+}
+
 void player_update(uint32_t delta) {
 	if (button_get_is_initial_press()) {
 		bomb_place(

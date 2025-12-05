@@ -34,6 +34,7 @@
 #define GREY RGB(4, 4, 2)
 #define WHITE RGB(7, 7, 3)
 #define YELLOW RGB(7, 5, 0)
+#define RED RGB(7, 0, 0)
 #define BACKGROUND_GREEN RGB(0, 4, 0)
 
 

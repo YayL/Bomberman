@@ -3,11 +3,14 @@
 #include "utils/screen.h"
 #include "menus/playing/map.h"
 #include "menus/playing/player.h"
+#include "menus/playing/bomb.h"
 
 void draw_fps(uint32_t delta);
 
 void playing_menu_init() {
     map_init();
+    player_init();
+    bombs_init();
 }
 
 void playing_menu_update(uint32_t delta) {

@@ -1,5 +1,6 @@
 #include "menus/playing/bomb.h"
 
+#include "game.h"
 #include "menus/playing/map.h"
 #include "menus/playing/player.h"
 
@@ -23,6 +24,10 @@ void bombs_remove(uint32_t remove_count) {
 	for (uint32_t i = 0; i < bombs_placed_count; ++i) {
 		bombs[i] = bombs[i + remove_count];
 	}
+}
+
+void bombs_init() {
+	bombs_placed_count = 0;
 }
 
 // Return value: true if this bomb should be removed
@@ -76,6 +81,7 @@ void bombs_update(uint32_t delta) {
 		map_set_tile(X, Y, TILE_EMPTY); \
 	}
 
+
 void draw_valid_tile(struct bomb *bomb) {
 	uint32_t x = bomb->position.x;
 	uint32_t y = bomb->position.y;
@@ -91,6 +97,42 @@ void draw_valid_tile(struct bomb *bomb) {
 
 	// Right
 	DRAW_BOMB_EX_TEXTURE(x + 1, y, EX_HORIZONTAL_TEXTURE);
+}
+
+//game over if plater in explosion range
+void player_in_bomb_range(struct bomb *bomb) {
+	struct player_position player_pos = player_get_position();
+	uint32_t player_grid_x = SCREEN_X_TO_GRID(player_pos.x + PLAYER_WIDTH / 2);
+	uint32_t player_grid_y = SCREEN_Y_TO_GRID(player_pos.y + PLAYER_HEIGHT / 2);
+
+	uint32_t bomb_x = bomb->position.x;
+	uint32_t bomb_y = bomb->position.y;
+
+	if (player_grid_x == bomb_x && player_grid_y == bomb_y) {
+		game_set_game_state(GAME_STATE_GAMEOVER);
+	}
+
+	// Up
+	if (player_grid_x == bomb_x && player_grid_y == bomb_y - 1) {
+		game_set_game_state(GAME_STATE_GAMEOVER);
+	}
+
+	// Down
+	if (player_grid_x == bomb_x && player_grid_y == bomb_y + 1) {
+		game_set_game_state(GAME_STATE_GAMEOVER);
+		
+	}
+
+	// Left
+	if (player_grid_x == bomb_x - 1 && player_grid_y == bomb_y) {
+		game_set_game_state(GAME_STATE_GAMEOVER);
+
+	}
+
+	// Right
+	if (player_grid_x == bomb_x + 1 && player_grid_y == bomb_y) {
+		game_set_game_state(GAME_STATE_GAMEOVER);
+	}
 }
 
 static inline void bomb_draw(struct bomb bomb) {
@@ -110,6 +152,7 @@ static inline void bomb_draw(struct bomb bomb) {
 			);
 
 			draw_valid_tile(&bomb);
+			player_in_bomb_range(&bomb);
 		break;
 		default:
 			puts("bomb_draw called with invalid bomb state");
