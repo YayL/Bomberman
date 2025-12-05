@@ -6,8 +6,9 @@
 #include "assets/wall_texture.h"
 #include "assets/stone_texture.h"
 
-#include "menus/playing/player.h"
 #include "menus/playing/bomb.h"
+#include "menus/playing/enemies.h"
+#include "menus/playing/player.h"
 
 static enum map_tiles map[GRID_HEIGHT][GRID_WIDTH];
 
@@ -19,7 +20,17 @@ static enum map_tiles map[GRID_HEIGHT][GRID_WIDTH];
 #define STONE_SPAWN_RATE_NUMERATOR 16
 #define STONE_SPAWN_RATE_DENOMINATOR 32
 
+void map_clear() {
+	for (uint32_t y = GRID_Y_START; y < GRID_Y_END; ++y) {
+		for (uint32_t x = GRID_X_START; x < GRID_X_END; ++x) {
+			map[y][x] = TILE_EMPTY;
+		}
+	}
+}
+
 void map_init() {
+	map_clear();
+
 	// Place top and bottom walls
 	for (uint32_t x = GRID_X_START; x < GRID_X_END; ++x) {
 		map[GRID_Y_START][x] = TILE_WALL;
@@ -58,18 +69,31 @@ void map_init() {
 	}
 
 	// Make sure that player start location is safe/escapable
-	struct player_position pos = player_get_position();
-	pos.x = SCREEN_X_TO_GRID(pos.x);
-	pos.y = SCREEN_Y_TO_GRID(pos.y);
+	struct position pos = player_get_grid_position();
 
 	if (pos.x != GRID_X_START + 1 || pos.y != GRID_Y_START + 1) {
 		puts("Fix player safety!\n");
 		exit();
 	}
-
+	
 	map[pos.y][pos.x] = TILE_EMPTY;
 	map[pos.y + 1][pos.x] = TILE_EMPTY;
-	map[pos.y][pos.x + 1] = TILE_EMPTY;
+	map[pos.y][pos.x + 1] = TILE_EMPTY;	
+
+	// Add random enemies
+	enemies_clear();
+	for (uint32_t y = GRID_Y_START; y < GRID_Y_END; ++y) {
+		for (uint32_t x = GRID_X_START; x < GRID_X_END; ++x) {
+			if ((x < GRID_X_START + ENEMY_SAFE_ZONE_WIDTH && y < GRID_Y_START + ENEMY_SAFE_ZONE_HEIGHT) || !map_is_empty(x, y)) {
+				continue;
+			}
+	
+			if (random_get_in_range(0, ENEMY_SPAWN_RATE_DENOMINATOR) <= ENEMY_SPAWN_RATE_NUMERATOR) {
+				enemies_add(x, y);
+			}
+		}
+	}
+
 }
 
 void map_draw() {
@@ -87,11 +111,13 @@ void map_draw() {
 		}
 	}
 
+	enemies_draw();
 	bombs_draw();
 }
 
 void map_update(uint32_t delta) {
 	bombs_update(delta);
+	enemies_update(delta);
 }
 
 void map_set_tile(uint32_t x, uint32_t y, enum map_tiles tile) {

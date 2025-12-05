@@ -3,8 +3,8 @@
 #include "utils/screen.h"
 #include "utils/switches.h"
 #include "utils/button.h"
+#include "game.h"
 
-#include "menus/playing/map.h"
 #include "menus/playing/bomb.h"
 
 #include "assets/player_texture.h"
@@ -17,59 +17,6 @@ static struct player player = {
 	}
 };
 
-#define IS_AVAILABLE(X, Y) map_is_empty(SCREEN_X_TO_GRID(X), SCREEN_Y_TO_GRID(Y))
-#define CLAMP(VALUE, MIN, MAX) if (VALUE < MIN) { VALUE = MIN; } else if (MAX < VALUE) { VALUE = MAX; }
-static inline void player_move(int32_t dx, int32_t dy) {
-	int32_t next_x = player.position.x + dx * player.speed;
-	int32_t next_y = player.position.y + dy * player.speed;
-
-	// This should never be a worry but just in case
-	CLAMP(next_x, 0, SCREEN_WIDTH - PLAYER_WIDTH);
-	CLAMP(next_y, 0, SCREEN_HEIGHT - PLAYER_HEIGHT);
-
-	// Since player is smaller than blocks we can just check the corners of the
-	// player and see if they intersect with something
-
-	// Unsure why the -1 are neccessary but they fixed an ¿issue?
-
-	if (dx < 0) {
-		const char top_left_dx = !IS_AVAILABLE(next_x, player.position.y);
-		const char bottom_left_dx = !IS_AVAILABLE(next_x, player.position.y + PLAYER_HEIGHT - 1);
-		if (top_left_dx || bottom_left_dx) {
-			// Going left and top left or bottom left intersects
-			next_x = GRID_X_TO_SCREEN((SCREEN_X_TO_GRID(next_x) + 1));
-		}
-	} else if (dx > 0) {
-		const char top_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.position.y);
-		const char bottom_right_dx = !IS_AVAILABLE(next_x + PLAYER_WIDTH - 1, player.position.y + PLAYER_HEIGHT - 1);
-		if (top_right_dx || bottom_right_dx) {
-			// Going right and top right or bottom right intersects
-			next_x = GRID_X_TO_SCREEN(SCREEN_X_TO_GRID(next_x + PLAYER_WIDTH)) - PLAYER_WIDTH;
-		}
-	}
-
-
-	if (dy < 0) {
-		const char top_left_dy = !IS_AVAILABLE(player.position.x, next_y);
-		const char top_right_dy = !IS_AVAILABLE(player.position.x + PLAYER_WIDTH - 1, next_y);
-		if (top_left_dy || top_right_dy) {
-			// Going up and top left or top right intersects
-			next_y = GRID_Y_TO_SCREEN((SCREEN_Y_TO_GRID(next_y) + 1));
-		}
-	} else if (dy > 0) {
-		const char bottom_left_dy = !IS_AVAILABLE(player.position.x, next_y + PLAYER_HEIGHT - 1);
-		const char bottom_right_dy = !IS_AVAILABLE(player.position.x + PLAYER_WIDTH - 1, next_y + PLAYER_HEIGHT - 1);
-		if (bottom_left_dy || bottom_right_dy) {
-			// Going down and bottom left or bottom right intersects
-			next_y = GRID_Y_TO_SCREEN(SCREEN_Y_TO_GRID(next_y + PLAYER_HEIGHT)) - PLAYER_HEIGHT;
-		}
-	}
-
-	// Since we don't check dxdy it can start twiching in a block by going diagonally into it
-
-	player.position.x = next_x;
-	player.position.y = next_y;
-}
 
 void player_init(){
 	player.position.x = GRID_X_TO_SCREEN(1);
@@ -108,7 +55,7 @@ void player_update(uint32_t delta) {
 		dx -= 1;
 	}
 
-	player_move(dx, dy);
+	entity_move(&player.position, player.speed, dx, dy, PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 void player_draw() {
@@ -124,6 +71,10 @@ void player_draw() {
 			framebuffer[SCREEN_TO_PIXEL(player_x + x, player_y + y)] = PLAYER_TEXTURE[y * BLOCK_SIZE + x];
 		}
 	}
+}
+
+void player_kill() {
+	game_set_game_state(GAME_STATE_GAMEOVER);
 }
 
 struct position player_get_position() {

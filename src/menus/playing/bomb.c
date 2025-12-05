@@ -3,6 +3,7 @@
 #include "game.h"
 #include "menus/playing/map.h"
 #include "menus/playing/player.h"
+#include "menus/playing/enemies.h"
 
 #include "utils/screen.h"
 #include "assets/bomb_texture.h"
@@ -16,6 +17,10 @@ static struct bomb bombs[MAX_BOMB_COUNT] = {0};
 #define BOMB_EXPLODED_TIME_SHOWN 1500000 // 1.5 seconds
 #define BOMB_PRIMED_TIME_SHOWN	 3000000 // 3 seconds
 
+void bombs_init() {
+	bombs_placed_count = 0;
+}
+
 void bombs_remove(uint32_t remove_count) {
 	ASSERT1(remove_count <= bombs_placed_count);
 	bombs_placed_count -= remove_count;
@@ -24,10 +29,6 @@ void bombs_remove(uint32_t remove_count) {
 	for (uint32_t i = 0; i < bombs_placed_count; ++i) {
 		bombs[i] = bombs[i + remove_count];
 	}
-}
-
-void bombs_init() {
-	bombs_placed_count = 0;
 }
 
 // Return value: true if this bomb should be removed
@@ -49,7 +50,8 @@ static inline char bomb_update(uint32_t delta, struct bomb * bomb) {
 				return 1;
 			}
 
-			struct player_position player_pos = player_get_position();
+			player_check_explosion_collision(bomb->position.x, bomb->position.y);
+			enemies_check_explosion_collision(bomb->position.x, bomb->position.y);
 		} break;
 		default:
 			puts("bomb_update called with invalid bomb state");
@@ -99,42 +101,6 @@ void draw_valid_tile(struct bomb *bomb) {
 	DRAW_BOMB_EX_TEXTURE(x + 1, y, EX_HORIZONTAL_TEXTURE);
 }
 
-//game over if plater in explosion range
-void player_in_bomb_range(struct bomb *bomb) {
-	struct player_position player_pos = player_get_position();
-	uint32_t player_grid_x = SCREEN_X_TO_GRID(player_pos.x + PLAYER_WIDTH / 2);
-	uint32_t player_grid_y = SCREEN_Y_TO_GRID(player_pos.y + PLAYER_HEIGHT / 2);
-
-	uint32_t bomb_x = bomb->position.x;
-	uint32_t bomb_y = bomb->position.y;
-
-	if (player_grid_x == bomb_x && player_grid_y == bomb_y) {
-		game_set_game_state(GAME_STATE_GAMEOVER);
-	}
-
-	// Up
-	if (player_grid_x == bomb_x && player_grid_y == bomb_y - 1) {
-		game_set_game_state(GAME_STATE_GAMEOVER);
-	}
-
-	// Down
-	if (player_grid_x == bomb_x && player_grid_y == bomb_y + 1) {
-		game_set_game_state(GAME_STATE_GAMEOVER);
-		
-	}
-
-	// Left
-	if (player_grid_x == bomb_x - 1 && player_grid_y == bomb_y) {
-		game_set_game_state(GAME_STATE_GAMEOVER);
-
-	}
-
-	// Right
-	if (player_grid_x == bomb_x + 1 && player_grid_y == bomb_y) {
-		game_set_game_state(GAME_STATE_GAMEOVER);
-	}
-}
-
 static inline void bomb_draw(struct bomb bomb) {
 	switch (bomb.state) {
 		case BOMB_STATE_PRIMED:
@@ -152,7 +118,6 @@ static inline void bomb_draw(struct bomb bomb) {
 			);
 
 			draw_valid_tile(&bomb);
-			player_in_bomb_range(&bomb);
 		break;
 		default:
 			puts("bomb_draw called with invalid bomb state");

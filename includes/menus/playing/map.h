@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include <stdint.h>
 
 enum __attribute__ ((__packed__)) map_tiles {
 	TILE_EMPTY,
