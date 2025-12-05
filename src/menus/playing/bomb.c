@@ -1,5 +1,7 @@
 #include "menus/playing/bomb.h"
+
 #include "menus/playing/map.h"
+#include "menus/playing/player.h"
 
 #include "utils/screen.h"
 #include "assets/bomb_texture.h"
@@ -23,6 +25,7 @@ void bombs_remove(uint32_t remove_count) {
 	}
 }
 
+// Return value: true if this bomb should be removed
 static inline char bomb_update(uint32_t delta, struct bomb * bomb) {
 	switch (bomb->state) {
 		case BOMB_STATE_PRIMED: {
@@ -38,15 +41,17 @@ static inline char bomb_update(uint32_t delta, struct bomb * bomb) {
 			bomb->time_left -= delta;
 			// If overflown = has exploded
 			if (bomb->time_left > BOMB_EXPLODED_TIME_SHOWN) {
-				return 1; // Should be removed
+				return 1;
 			}
+
+			struct player_position player_pos = player_get_position();
 		} break;
 		default:
 			puts("bomb_update called with invalid bomb state");
 			exit();
 	}
 
-	return 0; // Should not be removed
+	return 0;
 }
 
 void bombs_update(uint32_t delta) {
@@ -61,53 +66,31 @@ void bombs_update(uint32_t delta) {
 	}
 }
 
+#define DRAW_BOMB_EX_TEXTURE(X, Y, TEXTURE) \
+	if (map_is_empty(X, Y) || map_is_stone(X, Y)) { \
+		draw_texture( \
+			GRID_X_TO_SCREEN(X), \
+			GRID_Y_TO_SCREEN(Y), \
+			TEXTURE \
+		); \
+		map_set_tile(X, Y, TILE_EMPTY); \
+	}
+
 void draw_valid_tile(struct bomb *bomb) {
 	uint32_t x = bomb->position.x;
 	uint32_t y = bomb->position.y;
 
 	// Up
-	if (y > 0 && (map_is_empty(x, y - 1) || map_is_stone(x, y - 1))) {
-		draw_texture(
-			GRID_X_TO_SCREEN(x),
-			GRID_Y_TO_SCREEN(y - 1),
-			EX_VERTICAL_TEXTURE
-		);
-		
-		map_set_tile(x, y - 1, TILE_EMPTY);
-	}
+	DRAW_BOMB_EX_TEXTURE(x, y - 1, EX_VERTICAL_TEXTURE);
 
 	// Down
-	if (y < GRID_HEIGHT - 1 && (map_is_empty(x, y + 1) || map_is_stone(x, y + 1))) {
-		draw_texture(
-			GRID_X_TO_SCREEN(x),
-			GRID_Y_TO_SCREEN(y + 1),
-			EX_VERTICAL_TEXTURE
-		);
-
-		map_set_tile(x, y + 1, TILE_EMPTY);
-	}
+	DRAW_BOMB_EX_TEXTURE(x, y + 1, EX_VERTICAL_TEXTURE);
 
 	// Left
-	if (x > 0 && (map_is_empty(x - 1, y) || map_is_stone(x - 1, y))) {
-		draw_texture(
-			GRID_X_TO_SCREEN(x - 1),
-			GRID_Y_TO_SCREEN(y),
-			EX_HORIZONTAL_TEXTURE
-		);
-
-		map_set_tile(x - 1, y, TILE_EMPTY);
-	}
+	DRAW_BOMB_EX_TEXTURE(x - 1, y, EX_HORIZONTAL_TEXTURE);
 
 	// Right
-	if (x < GRID_WIDTH - 1 && (map_is_empty(x + 1, y) || map_is_stone(x + 1, y))) {
-		draw_texture(
-			GRID_X_TO_SCREEN(x + 1),
-			GRID_Y_TO_SCREEN(y),
-			EX_HORIZONTAL_TEXTURE
-		);
-
-		map_set_tile(x + 1, y, TILE_EMPTY);
-	}
+	DRAW_BOMB_EX_TEXTURE(x + 1, y, EX_HORIZONTAL_TEXTURE);
 }
 
 static inline void bomb_draw(struct bomb bomb) {
@@ -127,7 +110,6 @@ static inline void bomb_draw(struct bomb bomb) {
 			);
 
 			draw_valid_tile(&bomb);
-
 		break;
 		default:
 			puts("bomb_draw called with invalid bomb state");

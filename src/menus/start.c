@@ -19,9 +19,9 @@ void start_menu_draw() {
 	draw_text(SCREEN_WIDTH / 2 - 40, 10, "BOMBERMAN", YELLOW);
 	draw_text(SCREEN_WIDTH / 2 - 25, SCREEN_HEIGHT / 2 - 4, "START", WHITE);
 
-	draw_text(10, SCREEN_HEIGHT - 60, "UP:    SWITCH 0", WHITE);
-	draw_text(10, SCREEN_HEIGHT - 50, "DOWN:  SWITCH 1", WHITE);
-	draw_text(10, SCREEN_HEIGHT - 40, "RIGHT: SWITCH 8", WHITE);
+	draw_text(10, SCREEN_HEIGHT - 60, "UP:    SWITCH 1", WHITE);
+	draw_text(10, SCREEN_HEIGHT - 50, "DOWN:  SWITCH 8", WHITE);
+	draw_text(10, SCREEN_HEIGHT - 40, "RIGHT: SWITCH 0", WHITE);
 	draw_text(10, SCREEN_HEIGHT - 30, "LEFT:  SWITCH 9", WHITE);
 	draw_text(10, SCREEN_HEIGHT - 20, "BOMB:  BUTTON", WHITE);
 }

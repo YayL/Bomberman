@@ -9,8 +9,8 @@ struct player {
 	uint32_t speed;
 };
 
-#define PLAYER_HEIGHT 10
-#define PLAYER_WIDTH  10
+#define PLAYER_HEIGHT 14
+#define PLAYER_WIDTH  14
 
 void player_update(uint32_t delta);
 void player_draw();

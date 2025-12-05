@@ -7,11 +7,13 @@
 #include "menus/playing/map.h"
 #include "menus/playing/bomb.h"
 
+#include "assets/player_texture.h"
+
 static struct player player = {
 	.speed = 1,
 	.position = { 
-		.x = GRID_X_TO_SCREEN(1) + 5,
-		.y = GRID_Y_TO_SCREEN(3) + 5
+		.x = GRID_X_TO_SCREEN(1),
+		.y = GRID_Y_TO_SCREEN(3)
 	}
 };
 
@@ -66,8 +68,8 @@ static inline void player_move(int32_t dx, int32_t dy) {
 void player_update(uint32_t delta) {
 	if (button_get_is_initial_press()) {
 		bomb_place(
-			SCREEN_X_TO_GRID(player.position.x),
-			SCREEN_Y_TO_GRID(player.position.y)
+			SCREEN_X_TO_GRID(player.position.x + PLAYER_WIDTH / 2),
+			SCREEN_Y_TO_GRID(player.position.y + PLAYER_HEIGHT / 2)
 		);
 	}
 
@@ -98,7 +100,11 @@ void player_update(uint32_t delta) {
 }
 
 void player_draw() {
-	draw_rectangle(player.position.x, player.position.y, PLAYER_WIDTH, PLAYER_HEIGHT, RGB(7, 0, 0));
+	draw_texture(
+		player.position.x,
+		player.position.y,
+		PLAYER_TEXTURE
+	);
 }
 
 struct player_position player_get_position() {
