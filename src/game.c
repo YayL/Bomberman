@@ -2,6 +2,8 @@
 #include "dtekv-lib.h"
 #include "utils/timer.h"
 #include "utils/screen.h"
+#include "utils/switches.h"
+#include "utils/hw_counters.h"
 
 #include "menus/start.h"
 #include "menus/playing.h"
@@ -40,7 +42,15 @@ void game_init() {
 	game_set_game_state(GAME_STATE_START);
 }
 
+char prev_state = 0;
 void game_step(uint32_t delta) {
+
+	char new_state = switches_get_switch_state(4);
+	if (!prev_state && new_state) {
+		hw_counters_report();
+	}
+	prev_state = new_state;
+
 	switch (current_state) {
 		case GAME_STATE_START:
 			start_menu_update();
