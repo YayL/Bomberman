@@ -35,7 +35,7 @@ static inline void counters_clear() {
 	COUNTERS_LIST(COUNTERS_CALL_CLEAR);
 }
 
-#define COUNTERS_POP_STRUCT(NAME) counters->NAME = COUNTERS_GET_FUNC_NAME(NAME)();
+#define COUNTERS_POP_STRUCT(NAME) counters->NAME += COUNTERS_GET_FUNC_NAME(NAME)();
 static inline void counters_get(struct hw_counters * counters) {
 	COUNTERS_LIST(COUNTERS_POP_STRUCT);
 }
@@ -45,25 +45,20 @@ static inline void counters_get(struct hw_counters * counters) {
 	print_dec((VALUE)); \
 	putc('\n');
 
-#define PRINT_HW_COUNTER(NAME) PRINT_DEC(#NAME ": \t", counters.NAME);
+#define PRINT_HW_COUNTER(NAME) PRINT_DEC(#NAME ": \t", counters->NAME);
 
-static inline void hw_counters_report() {
-	struct hw_counters counters;
-	counters_get(&counters);
-
+static inline void counter_report(struct hw_counters * counters) {
 	puts("HW Counter Report:\n");
 	puts("==================\n");
 	COUNTERS_LIST(PRINT_HW_COUNTER);
 	puts("==================\n");
 	puts("Metrics:\n");
 	puts("==================\n");
-	PRINT_DEC("Execution Time: \t", __div64_32(counters.mcycle, 30000000));
-	PRINT_DEC("IPC(%):\t\t\t", __div64_32(100 * (uint64_t) counters.minstret, counters.mcycle));
-	PRINT_DEC("D-cache miss(‰)\t\t", __div64_32(1000 * (uint64_t) counters.mhpmcounter5, counters.mhpmcounter3));
-	PRINT_DEC("I-cache miss(‰)\t\t", __div64_32(1000 * (uint64_t) counters.mhpmcounter4, counters.minstret));
-	PRINT_DEC("Mem Intensity(%):\t", __div64_32(100 * (uint64_t) counters.mhpmcounter3, counters.minstret));
-	PRINT_DEC("Cache misses:\t\t", counters.mhpmcounter4 + counters.mhpmcounter5);
+	PRINT_DEC("Execution Time: \t", __div64_32(counters->mcycle, 30000000));
+	PRINT_DEC("IPC(%):\t\t\t", __div64_32(100 * (uint64_t) counters->minstret, counters->mcycle));
+	PRINT_DEC("D-cache miss(‰)\t\t", __div64_32(1000 * counters->mhpmcounter5, counters->mhpmcounter3));
+	PRINT_DEC("I-cache miss(‰)\t\t", __div64_32(1000 * counters->mhpmcounter4, counters->minstret));
+	PRINT_DEC("Mem Intensity(%):\t", __div64_32(100 * counters->mhpmcounter3, counters->minstret));
+	PRINT_DEC("Cache misses:\t\t", counters->mhpmcounter4 + counters->mhpmcounter5);
 	puts("==================\n");
-
-	counters_clear();
 }

@@ -42,38 +42,51 @@ void game_init() {
 	game_set_game_state(GAME_STATE_START);
 }
 
+struct hw_counters update_counters = {0}, draw_counters = {0}, other_counters = {0};
 char prev_state = 0;
 void game_step(uint32_t delta) {
-
 	char new_state = switches_get_switch_state(4);
 	if (!prev_state && new_state) {
-		hw_counters_report();
+		puts("Update counters\n");
+		hw_counters_report(&update_counters);
+		puts("\nDraw counters\n");
+		hw_counters_report(&draw_counters);
+
+		puts("\nOther counters\n");
+		counter_report(&other_counters);
 	}
 	prev_state = new_state;
 
+	counters_clear();
 	switch (current_state) {
-		case GAME_STATE_START:
-			start_menu_update();
-			start_menu_draw();
-			break;
-		case GAME_STATE_PLAYING:
-			playing_menu_update(time_since_last_update);
-			playing_menu_draw(time_since_last_update);
-			break;
-		case GAME_STATE_GAMEOVER:
-			gameover_menu_update();
-			gameover_menu_draw();
-			break;
+		case GAME_STATE_START: start_menu_update(); break;
+		case GAME_STATE_PLAYING: playing_menu_update(time_since_last_update); break;
+		case GAME_STATE_GAMEOVER: gameover_menu_update(); break;
 		default:
 			puts("Invalid game state in game loop");
 			exit();
 	}
+	counters_get(&update_counters);
 
+	counters_clear();
+	switch (current_state) {
+		case GAME_STATE_START: start_menu_draw(); break;
+		case GAME_STATE_PLAYING: playing_menu_draw(time_since_last_update); break;
+		case GAME_STATE_GAMEOVER: gameover_menu_draw(); break;
+		default:
+			puts("Invalid game state in game loop");
+			exit();
+	}
+	counters_get(&draw_counters);
+
+	counters_clear();
 	screen_blit();
+	counters_get(&other_counters);
 }
 
 void game_run() {
 	time_since_last_update = 0;
+	counters_clear();
 
 	while (is_running) {
 		uint32_t delta = timer_get_delta_us();
@@ -83,6 +96,8 @@ void game_run() {
 			continue;
 		}
 
+		counters_get(&other_counters);
+
 		game_step(time_since_last_update);
 		time_since_last_update = 0;
 
@@ -91,5 +106,7 @@ void game_run() {
 			__asm__("nop");
 		}
 		#endif
+	
+		counters_clear();
 	}
 }

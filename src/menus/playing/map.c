@@ -53,7 +53,8 @@ void map_init() {
 	}
 
 	// Seed random with timer
-	random_seed(0xdeadbeef /* timer_get_delta_us_no_reset() */);
+	// random_seed(timer_get_delta_us_no_reset());
+	random_seed(0xdeadbeef);
 
 	// Place breakable stone blocks
 	for (uint32_t y = GRID_Y_START; y < GRID_Y_END; ++y) {

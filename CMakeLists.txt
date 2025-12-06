@@ -21,7 +21,7 @@ set(CMAKE_C_LINK_DEPENDS_NO_SHARED TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 # Compiler flags
-add_compile_options(-Wall -nostdlib -Ofast -mabi=ilp32 -march=rv32imzicsr -fno-builtin -g)
+add_compile_options(-Wall -nostdlib -O3 -mabi=ilp32 -march=rv32imzicsr -fno-builtin -g)
 
 # Find sources
 file(GLOB_RECURSE SOURCES src/**.c src/*.S lib/*.c lib/*.S)
