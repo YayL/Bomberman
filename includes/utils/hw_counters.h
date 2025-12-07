@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "utils/math.h"
 
 #define COUNTERS_LIST(f) \
 	f(mcycle) \
