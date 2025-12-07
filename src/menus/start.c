@@ -1,3 +1,7 @@
+/*
+	Contributors: Axel
+*/
+
 #include "menus/start.h"
 
 #include "utils/screen.h"

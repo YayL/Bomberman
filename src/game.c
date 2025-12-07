@@ -1,3 +1,9 @@
+/*
+	Contributors:
+	Axel:
+	- Implemented game states
+*/
+
 #include "game.h"
 #include "dtekv-lib.h"
 #include "utils/timer.h"

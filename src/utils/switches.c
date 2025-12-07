@@ -1,3 +1,7 @@
+/*
+	Contributor: Axel and Zimon
+*/
+
 #include "utils/switches.h"
 
 #define SWITCH_ADDRESS 0x04000010

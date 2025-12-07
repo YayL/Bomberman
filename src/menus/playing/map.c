@@ -1,3 +1,10 @@
+/*
+Contributors:
+	Axel:
+		- Initial implementation
+		- Map generation and drawing
+*/
+
 #include "menus/playing/map.h"
 
 #include "utils/screen.h"

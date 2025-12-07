@@ -1,3 +1,7 @@
+/*
+Contributors: Axel
+*/
+
 #include "menus/gameover.h"
 
 #include "utils/screen.h"

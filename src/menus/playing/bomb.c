@@ -1,3 +1,14 @@
+/*
+	Contributors:
+	    Axel:
+	        - Draw bomb
+			- Bomb placement
+			- Bomb effect on player and map
+	        
+	    Zimon:
+*/
+
+
 #include "menus/playing/bomb.h"
 
 #include "game.h"

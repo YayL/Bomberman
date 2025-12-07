@@ -1,3 +1,9 @@
+/*
+    Contiributors:
+        Axel:
+            - Initial implementation of drawing and updating
+*/
+
 #include "menus/playing.h"
 
 #include "utils/screen.h"

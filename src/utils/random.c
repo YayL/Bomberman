@@ -1,3 +1,7 @@
+/*
+	Contributor: Axel
+*/
+
 #include "utils/random.h"
 
 #define IN_RANGE(VALUE, MIN, MAX) (((VALUE) % (MAX - MIN + 1)) + MIN)

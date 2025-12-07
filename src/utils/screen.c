@@ -1,3 +1,14 @@
+/*
+Contributors:
+    Axel:
+        - Initial implementation
+        - Screen drawing functions
+        
+    Zimon:
+    - Double buffering management
+*/
+
+
 #include "utils/screen.h"
 #include "dtekv-lib.h"
 #include "assets/font.h"

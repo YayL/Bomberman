@@ -1,3 +1,9 @@
+/*
+	Contributor:
+	Axel:
+	- Added button handling
+*/
+
 #include "utils/button.h"
 
 #define BUTTONS_ADDRESS 0x040000d0

@@ -1,3 +1,9 @@
+/*
+	Contributors:
+	Axel:
+		- Movement
+*/
+
 #include "menus/playing/player.h"
 
 #include "utils/screen.h"
