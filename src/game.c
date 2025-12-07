@@ -54,9 +54,9 @@ void game_step(uint32_t delta) {
 	char new_state = switches_get_switch_state(4);
 	if (!prev_state && new_state) {
 		puts("Update counters\n");
-		hw_counters_report(&update_counters);
+		counter_report(&update_counters);
 		puts("\nDraw counters\n");
-		hw_counters_report(&draw_counters);
+		counter_report(&draw_counters);
 
 		puts("\nOther counters\n");
 		counter_report(&other_counters);
