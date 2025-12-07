@@ -1,8 +1,9 @@
 /*
-Contributors: Axel
+*	Contributors: Axel
 */
 
 #include "menus/gameover.h"
+#include "menus/playing/enemies.h"
 
 #include "utils/screen.h"
 #include "utils/button.h"
@@ -20,6 +21,10 @@ void gameover_menu_update() {
 
 void gameover_menu_draw() {
 	fill_background(BLACK);
-	draw_text(SCREEN_WIDTH / 2 - 36, 10, "GAME OVER", RED);
+	if (enemies_get_alive_count()) {
+		draw_text(SCREEN_WIDTH / 2 - 36, 10, "GAME OVER", RED);
+	} else {
+		draw_text(SCREEN_WIDTH / 2 - 34, 10, "YOU WON", YELLOW);
+	}
 	draw_text(SCREEN_WIDTH / 2 - 92, SCREEN_HEIGHT / 2 - 4, "PRESS BTN TO PLAY AGAIN", WHITE);
 }

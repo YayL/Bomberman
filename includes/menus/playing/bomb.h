@@ -1,5 +1,5 @@
 #pragma once
-#include "common.h"
+#include <stdint.h>
 
 #define MAX_BOMB_COUNT 3
 

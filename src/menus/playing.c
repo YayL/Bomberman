@@ -1,7 +1,12 @@
 /*
-    Contiributors:
-        Axel:
-            - Initial implementation of drawing and updating
+*   Contiributors: Axel & Zimon
+*
+*   Axel:
+*       - Initial implementation of drawing and updating
+*
+*   Zimon:
+*       - FPS display
+*       - Initialization
 */
 
 #include "menus/playing.h"
@@ -10,7 +15,6 @@
 #include "menus/playing/map.h"
 #include "menus/playing/player.h"
 #include "menus/playing/bomb.h"
-#include "menus/playing/enemies.h"
 
 void draw_fps(uint32_t delta);
 

@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+*	Contributors: Zimon
+*/
+
 #include <stdint.h>
 
 // These are copied from musl-libc

@@ -40,7 +40,6 @@ target_include_directories(bomberman PRIVATE
     ${CMAKE_SOURCE_DIR}/lib
 )
 
-
 # Generate .bin and disassembly
 add_custom_command(TARGET bomberman POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary bomberman.elf bomberman.bin

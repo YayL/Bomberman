@@ -24,6 +24,7 @@ struct enemy {
 	char killed;
 };
 
+uint32_t enemies_get_alive_count();
 void enemies_add(uint32_t x, uint32_t y);
 void enemies_clear();
 

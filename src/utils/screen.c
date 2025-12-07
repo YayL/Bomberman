@@ -1,11 +1,13 @@
 /*
-Contributors:
-    Axel:
-        - Initial implementation
-        - Screen drawing functions
-        
-    Zimon:
-    - Double buffering management
+*   Contributors: Axel & Zimon
+*
+*   Axel:
+*        - Initial implementation
+*        - Screen drawing functions
+*
+*    Zimon:
+*        - VGA DMA and screen buffer handling
+*        - Optimized draw calls for higher FPS
 */
 
 

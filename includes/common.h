@@ -1,11 +1,14 @@
 #pragma once
 
+/*
+*	Contributors: Zimon
+*/
+
 #include <stdint.h>
 
 #include "dtekv-lib.h"
-#include "utils/timer.h"
 
-// #define EMULATOR
+#define EMULATOR
 
 #define TIME(TEXT, CODE) { \
     uint32_t start = timer_get_delta_us_no_reset(); \

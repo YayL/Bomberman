@@ -1,7 +1,11 @@
 /*
-	Contributors:
-	Axel:
-		- Movement
+*	Contributors: Axel & Zimon
+*
+*	Axel:
+*		- Movement
+*
+*	Zimon:
+*		- Entity collision movement
 */
 
 #include "menus/playing/player.h"
@@ -65,7 +69,7 @@ void player_update(uint32_t delta) {
 }
 
 void player_draw() {
-	volatile unsigned char * const framebuffer = screen_get_framebuffer_addr();
+	volatile char * const framebuffer = screen_get_framebuffer_addr();
 	const uint32_t player_x = player.position.x, player_y = player.position.y;
 
 	for (uint32_t y = 0; y < BLOCK_SIZE; ++y) {

@@ -1,3 +1,7 @@
+/*
+*	Contributors: Zimon
+*/
+
 #include "dtekv-lib.h"
 #include "utils/timer.h"
 #include "game.h"

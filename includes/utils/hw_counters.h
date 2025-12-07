@@ -1,8 +1,11 @@
 #pragma once
+
+/*
+*	Contributors: Zimon
+*/
+
 #include <stdint.h>
-#include "dtekv-lib.h"
-#include "utils/math.h"
-#include "utils/mem.h"
+#include "common.h"
 
 #define COUNTERS_LIST(f) \
 	f(mcycle) \
@@ -32,12 +35,16 @@ COUNTERS_LIST(COUNTERS_GET_FUNC);
 
 #define COUNTERS_CALL_CLEAR(NAME) COUNTERS_CLEAR_FUNC_NAME(NAME)();
 static inline void counters_clear() {
+#ifndef EMULATOR
 	COUNTERS_LIST(COUNTERS_CALL_CLEAR);
+#endif
 }
 
 #define COUNTERS_POP_STRUCT(NAME) counters->NAME += COUNTERS_GET_FUNC_NAME(NAME)();
-static inline void counters_get(struct hw_counters * counters) {
+static inline void counters_popualte(struct hw_counters * counters) {
+#ifndef EMULATOR
 	COUNTERS_LIST(COUNTERS_POP_STRUCT);
+#endif
 }
 
 #define PRINT_DEC(TEXT, VALUE) \
@@ -48,17 +55,21 @@ static inline void counters_get(struct hw_counters * counters) {
 #define PRINT_HW_COUNTER(NAME) PRINT_DEC(#NAME ": \t", counters->NAME);
 
 static inline void counter_report(struct hw_counters * counters) {
+#ifndef EMULATOR
 	puts("HW Counter Report:\n");
 	puts("==================\n");
 	COUNTERS_LIST(PRINT_HW_COUNTER);
 	puts("==================\n");
 	puts("Metrics:\n");
 	puts("==================\n");
-	PRINT_DEC("Execution Time: \t", __div64_32(counters->mcycle, 30000000));
-	PRINT_DEC("IPC(%):\t\t\t", __div64_32(100 * (uint64_t) counters->minstret, counters->mcycle));
-	PRINT_DEC("D-cache miss(‰)\t\t", __div64_32(1000 * counters->mhpmcounter5, counters->mhpmcounter3));
-	PRINT_DEC("I-cache miss(‰)\t\t", __div64_32(1000 * counters->mhpmcounter4, counters->minstret));
-	PRINT_DEC("Mem Intensity(%):\t", __div64_32(100 * counters->mhpmcounter3, counters->minstret));
-	PRINT_DEC("Cache misses:\t\t", counters->mhpmcounter4 + counters->mhpmcounter5);
+	PRINT_DEC("Execution Time:\t", __div64_32(counters->mcycle, 30000000 / 1000));
+	PRINT_DEC("IPC(%):\t\t", __div64_32(10000 * (uint64_t) counters->minstret, counters->mcycle));
+	PRINT_DEC("I-cache miss:\t", __div64_32(10000 * ((uint64_t) counters->minstret - counters->mhpmcounter4), counters->minstret));
+	PRINT_DEC("D-cache miss:\t", __div64_32(10000 * ((uint64_t) counters->mhpmcounter3 - counters->mhpmcounter5), counters->mhpmcounter3));
+	PRINT_DEC("DH stalls:\t", __div64_32(10000 * (uint64_t) counters->mhpmcounter8, counters->mcycle));
+	PRINT_DEC("Mem Intensity(%):", __div64_32(10000 * (uint64_t) counters->mhpmcounter3, counters->minstret));
 	puts("==================\n");
+#else
+	puts("HW Counters do not work on emulator");
+#endif
 }

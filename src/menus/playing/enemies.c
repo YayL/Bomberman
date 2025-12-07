@@ -1,3 +1,7 @@
+/*
+*	Contributors: Zimon
+*/
+
 #include "menus/playing/enemies.h"
 
 #include "menus/playing/player.h"
@@ -10,6 +14,10 @@
 
 static uint32_t enemies_alive_count = 0;
 static struct enemy enemies[MAX_ENEMY_COUNT] = {0};
+
+uint32_t enemies_get_alive_count() {
+	return enemies_alive_count;
+}
 
 void enemies_add(uint32_t x, uint32_t y) {
 	if (enemies_alive_count >= MAX_ENEMY_COUNT) {
@@ -66,6 +74,7 @@ char enemy_update(struct enemy * enemy, uint32_t delta) {
 }
 
 void enemies_update(uint32_t delta) {
+	// Yes this is super ugly; deal with it
 	for (uint32_t i = 0; i < enemies_alive_count;) {
 		if (enemy_update(&enemies[i], delta)) {
 			enemy_remove(i);
@@ -105,7 +114,6 @@ static inline void enemy_check_explosion_collision(uint32_t bx, uint32_t by, str
 												);
 
 	if (vertical_explosion_collision || horizontal_explosion_collision) {
-		puts("Enemey killed\n");
 		enemy->killed = 1;
 	}
 }

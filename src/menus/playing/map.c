@@ -1,14 +1,22 @@
 /*
-Contributors:
-	Axel:
-		- Initial implementation
-		- Map generation and drawing
+*
+*	Contributors: Axel & Zimon
+*
+*	Axel:
+*		- Initial implementation
+*		- Map generation and drawing
+*
+*	Zimon:
+*		- Map clearing
+*		- Enemy spawning
+*
 */
 
 #include "menus/playing/map.h"
 
 #include "utils/screen.h"
 #include "utils/random.h"
+#include "utils/timer.h"
 
 #include "assets/wall_texture.h"
 #include "assets/stone_texture.h"
@@ -60,8 +68,8 @@ void map_init() {
 	}
 
 	// Seed random with timer
-	// random_seed(timer_get_delta_us_no_reset());
-	random_seed(0xdeadbeef);
+	random_seed(timer_get_delta_us_no_reset());
+	// random_seed(0xdeadbeef);
 
 	// Place breakable stone blocks
 	for (uint32_t y = GRID_Y_START; y < GRID_Y_END; ++y) {

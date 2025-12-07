@@ -1,4 +1,9 @@
+/*
+*	Contributors: Zimon
+*/
+
 #include "utils/timer.h"
+#include "common.h"
 
 #define TIMER_ADDRESS 0x04000020
 

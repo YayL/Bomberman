@@ -1,6 +1,7 @@
 #pragma once
 
-#include "common.h"
+#include <stdint.h>
+
 void timer_enable_interrupt();
 
 void timer_init();

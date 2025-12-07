@@ -1,4 +1,9 @@
 #pragma once
+
+/*
+*	Contributors: Zimon
+*/
+
 #include <stdint.h>
 
 // Taken from:

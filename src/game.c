@@ -1,14 +1,20 @@
 /*
-	Contributors:
-	Axel:
-	- Implemented game states
+*	Contributors: Axel & Zimon
+*
+*	Axel:
+*		- Initial game state logic
+*		- Added gameover
+*		- Implemented game states
+*
+*	Zimon:
+*		- Added game state dispatch
+*		- Added counters logic
 */
 
 #include "game.h"
 #include "dtekv-lib.h"
 #include "utils/timer.h"
 #include "utils/screen.h"
-#include "utils/switches.h"
 #include "utils/hw_counters.h"
 
 #include "menus/start.h"
@@ -48,22 +54,12 @@ void game_init() {
 	game_set_game_state(GAME_STATE_START);
 }
 
-struct hw_counters update_counters = {0}, draw_counters = {0}, other_counters = {0};
+struct hw_counters update_counters = {0}, draw_counters = {0}, all_counters = {0};
 char prev_state = 0;
 void game_step(uint32_t delta) {
-	char new_state = switches_get_switch_state(4);
-	if (!prev_state && new_state) {
-		puts("Update counters\n");
-		counter_report(&update_counters);
-		puts("\nDraw counters\n");
-		counter_report(&draw_counters);
-
-		puts("\nOther counters\n");
-		counter_report(&other_counters);
-	}
-	prev_state = new_state;
-
+	counters_popualte(&all_counters);
 	counters_clear();
+
 	switch (current_state) {
 		case GAME_STATE_START: start_menu_update(); break;
 		case GAME_STATE_PLAYING: playing_menu_update(time_since_last_update); break;
@@ -72,9 +68,11 @@ void game_step(uint32_t delta) {
 			puts("Invalid game state in game loop");
 			exit();
 	}
-	counters_get(&update_counters);
 
+	counters_popualte(&update_counters);
+	counters_popualte(&all_counters);
 	counters_clear();
+
 	switch (current_state) {
 		case GAME_STATE_START: start_menu_draw(); break;
 		case GAME_STATE_PLAYING: playing_menu_draw(time_since_last_update); break;
@@ -83,26 +81,27 @@ void game_step(uint32_t delta) {
 			puts("Invalid game state in game loop");
 			exit();
 	}
-	counters_get(&draw_counters);
 
-	counters_clear();
+	counters_popualte(&draw_counters);
 	screen_blit();
-	counters_get(&other_counters);
 }
 
+#define TESTING_TIMER_INIT 60000000
+
 void game_run() {
+	// uint32_t time_left = TESTING_TIMER_INIT;
 	time_since_last_update = 0;
 	counters_clear();
 
 	while (is_running) {
+		// if (timer_left > TESTING_TIMER_INIT) { break; }
 		uint32_t delta = timer_get_delta_us();
 		time_since_last_update += delta;
+		// time_left -= delta;
 
 		if (time_since_last_update < TARGET_TIME_UPDATE) {
 			continue;
 		}
-
-		counters_get(&other_counters);
 
 		game_step(time_since_last_update);
 		time_since_last_update = 0;
@@ -112,7 +111,14 @@ void game_run() {
 			__asm__("nop");
 		}
 		#endif
-	
-		counters_clear();
 	}
+
+	puts("Update counters\n");
+	counter_report(&update_counters);
+
+	puts("\nDraw counters\n");
+	counter_report(&draw_counters);
+
+	puts("\nAll counters\n");
+	counter_report(&all_counters);
 }

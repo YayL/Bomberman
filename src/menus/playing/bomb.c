@@ -1,17 +1,21 @@
 /*
-	Contributors:
-	    Axel:
-	        - Draw bomb
-			- Bomb placement
-			- Bomb effect on player and map
-	        
-	    Zimon:
+*
+*	Contributors: Axel & Zimon
+*
+*	Axel:
+*		- Draw bomb
+*		- Bomb placement
+*		- Bomb effect on player and map
+*
+*	Zimon:
+*		- Bomb handling
+*		- Bomb update logic
+*		- Bomb placement
+*
 */
-
 
 #include "menus/playing/bomb.h"
 
-#include "game.h"
 #include "menus/playing/map.h"
 #include "menus/playing/player.h"
 #include "menus/playing/enemies.h"
@@ -79,7 +83,6 @@ void bombs_update(uint32_t delta) {
 	}
 
 	if (remove_count > 0) {
-		puts("Removing bomb\n");
 		bombs_remove(remove_count);
 	}
 }

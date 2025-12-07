@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include <stdint.h>
 
 void random_seed(uint32_t seed);
 

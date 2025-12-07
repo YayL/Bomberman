@@ -1,7 +1,11 @@
 /*
-	Contributor:
-	Axel:
-	- Added button handling
+*	Contributor:
+*
+*	Axel:
+*		- Added button handling
+*
+*	Zimon:
+*		- Moved initial press logic from game to here
 */
 
 #include "utils/button.h"

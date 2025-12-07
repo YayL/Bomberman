@@ -1,8 +1,9 @@
+# How to run
 1) git clone https://github.com/YayL/Bomberman.git
 2) cd Bomberman
 3) make cbuild
-4) Upload code to your de10-lite board
+4) Upload build/bomberman.bin to your DE10-Lite Board
 
 # Build
-- First time: `make cbuild`
+- First time and new files: `make cbuild`
 - Otherwise: `make`

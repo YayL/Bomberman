@@ -1,4 +1,12 @@
 #pragma once
+
+/*
+*	Contributors: Zimon
+*	
+*	Zimon:
+*		- Added player_check_explosion_collision
+*/ 
+
 #include "common.h"
 #include "utils/screen.h"
 
